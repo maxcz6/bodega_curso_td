@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         // Llamamos al seeder de sesiones que contiene el temario
         $this->call([
             SesionSeeder::class,
+            ProductoDemoSeeder::class,
         ]);
     }
 }
