@@ -6,6 +6,7 @@ import {
   Users,
   ShoppingCart,
   ArrowUpDown,
+  FileText,
 } from 'lucide-react';
 
 // Ítems del menú — sin Usuarios ni Sesiones
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { name: 'Categorías',  path: '/categorias',  icon: FolderOpen },
   { name: 'Clientes',    path: '/clientes',    icon: Users },
   { name: 'Ventas',      path: '/ventas',      icon: ShoppingCart },
+  { name: 'Comprobantes', path: '/comprobantes', icon: FileText },
   { name: 'Movimientos', path: '/movimientos', icon: ArrowUpDown },
 ];
 

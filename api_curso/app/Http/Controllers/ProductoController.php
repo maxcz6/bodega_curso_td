@@ -10,7 +10,9 @@ class ProductoController extends Controller
 {
     public function index()
     {
-        $productos = Producto::with('categoria')->get();
+        $productos = Producto::select('id_producto','nombre','codigo_barras','precio_venta','precio_compra','stock_actual','stock_minimo','estado','id_categoria')
+            ->with('categoria:id_categoria,nombre')
+            ->get();
         return response()->json([
             'success' => true,
             'data' => $productos

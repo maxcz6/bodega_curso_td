@@ -2,28 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cliente;
+use App\Models\TipoComprobante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ClienteController extends Controller
+class TipoComprobanteController extends Controller
 {
     public function index()
     {
-        $clientes = Cliente::select('id_cliente','nombres','dni_ruc','telefono','direccion')->get();
+        $tipos = TipoComprobante::all();
         return response()->json([
             'success' => true,
-            'data' => $clientes
+            'data' => $tipos
         ]);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nombres' => 'required|string|max:150',
-            'dni_ruc' => 'nullable|string|max:20',
-            'direccion' => 'nullable|string|max:255',
-            'telefono' => 'nullable|string|max:20',
+            'nombre' => 'required|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -33,48 +30,49 @@ class ClienteController extends Controller
             ], 422);
         }
 
-        $cliente = Cliente::create($request->all());
+        $maxId = TipoComprobante::max('id_tipo_comprobante') ?? 0;
+        $tipo = TipoComprobante::create([
+            'id_tipo_comprobante' => $maxId + 1,
+            'nombre' => $request->nombre,
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Cliente creado con éxito',
-            'data' => $cliente
+            'message' => 'Tipo de comprobante creado con éxito',
+            'data' => $tipo
         ], 201);
     }
 
     public function show($id)
     {
-        $cliente = Cliente::find($id);
+        $tipo = TipoComprobante::find($id);
 
-        if (!$cliente) {
+        if (!$tipo) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cliente no encontrado'
+                'message' => 'No encontrado'
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'data' => $cliente
+            'data' => $tipo
         ]);
     }
 
     public function update(Request $request, $id)
     {
-        $cliente = Cliente::find($id);
+        $tipo = TipoComprobante::find($id);
 
-        if (!$cliente) {
+        if (!$tipo) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cliente no encontrado'
+                'message' => 'No encontrado'
             ], 404);
         }
 
         $validator = Validator::make($request->all(), [
-            'nombres' => 'required|string|max:150',
-            'dni_ruc' => 'nullable|string|max:20',
-            'direccion' => 'nullable|string|max:255',
-            'telefono' => 'nullable|string|max:20',
+            'nombre' => 'required|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -84,39 +82,38 @@ class ClienteController extends Controller
             ], 422);
         }
 
-        $cliente->update($request->all());
+        $tipo->update(['nombre' => $request->nombre]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Cliente actualizado con éxito',
-            'data' => $cliente
+            'message' => 'Actualizado con éxito',
+            'data' => $tipo
         ]);
     }
 
     public function destroy($id)
     {
-        $cliente = Cliente::find($id);
+        $tipo = TipoComprobante::find($id);
 
-        if (!$cliente) {
+        if (!$tipo) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cliente no encontrado'
+                'message' => 'No encontrado'
             ], 404);
         }
 
-        // Evitar eliminar clientes con ventas asociadas
-        if ($cliente->ventas()->count() > 0) {
+        if ($tipo->ventas()->count() > 0) {
             return response()->json([
                 'success' => false,
-                'message' => 'No se puede eliminar el cliente porque tiene ventas registradas a su nombre'
+                'message' => 'No se puede eliminar porque tiene ventas asociadas'
             ], 400);
         }
 
-        $cliente->delete();
+        $tipo->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Cliente eliminado con éxito'
+            'message' => 'Eliminado con éxito'
         ]);
     }
 }

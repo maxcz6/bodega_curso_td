@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, ShoppingCart, Eye } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
@@ -11,6 +12,7 @@ const EMPTY_DETALLE = { id_producto: '', cantidad: '', precio_unitario: '' };
 const EMPTY_FORM = { id_cliente: '', id_tipo_comprobante: '', detalles: [{ ...EMPTY_DETALLE }] };
 
 export default function VentasView() {
+  const navigate = useNavigate();
   const { items: ventas, loading, error, fetchData, clearError } = useCrud('/ventas', 'id_venta');
 
   const [productos, setProductos] = useState([]);
@@ -33,6 +35,13 @@ export default function VentasView() {
       setProductos(prodRes.data?.data ?? prodRes.data ?? []);
       setClientes(cliRes.data?.data ?? cliRes.data ?? []);
       setTiposComprobante(tiposRes.data?.data ?? tiposRes.data ?? []);
+      
+      const draft = sessionStorage.getItem('ventasDraft');
+      if (draft) {
+        setFormData(JSON.parse(draft));
+        setModalOpen(true);
+        sessionStorage.removeItem('ventasDraft');
+      }
     }).catch(err => console.error('[VentasView] datos auxiliares:', err))
       .finally(() => setAuxiliarLoading(false));
   }, []);
@@ -83,7 +92,8 @@ export default function VentasView() {
     setSaving(true);
     setFormError(null);
     try {
-      await api.post('/ventas', formData);
+      const payload = { ...formData, items: formData.detalles };
+      await api.post('/ventas', payload);
       await fetchData();
       closeModal();
     } catch (err) {
@@ -156,7 +166,7 @@ export default function VentasView() {
                     </span>
                   </div>
                   <div className="text-sm text-text-muted">
-                    {venta.cliente?.nombre || 'Cliente genérico'} · {new Date(venta.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    {venta.cliente?.nombres || 'Cliente genérico'} · {new Date(venta.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })}
                   </div>
                 </div>
               </div>
@@ -191,9 +201,17 @@ export default function VentasView() {
 
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label htmlFor="venta-cliente" className="block text-sm font-medium text-text-muted">
-                Cliente <span className="text-red-400">*</span>
-              </label>
+              <div className="flex justify-between items-end mb-1">
+                <label htmlFor="venta-cliente" className="block text-sm font-medium text-text-muted">
+                  Cliente <span className="text-red-400">*</span>
+                </label>
+                <button type="button" onClick={() => {
+                  sessionStorage.setItem('ventasDraft', JSON.stringify(formData));
+                  navigate('/clientes', { state: { returnTo: '/ventas' } });
+                }} className="text-xs text-primary hover:underline flex items-center gap-1">
+                  <Plus size={12} /> Nuevo Cliente
+                </button>
+              </div>
               <Select
                 id="venta-cliente"
                 value={formData.id_cliente}
@@ -202,14 +220,22 @@ export default function VentasView() {
               >
                 <option value="">Selecciona un cliente</option>
                 {clientes.map(c => (
-                  <option key={c.id_cliente} value={c.id_cliente}>{c.nombre}</option>
+                  <option key={c.id_cliente} value={c.id_cliente}>{c.nombres}</option>
                 ))}
               </Select>
             </div>
             <div className="space-y-1">
-              <label htmlFor="venta-comprobante" className="block text-sm font-medium text-text-muted">
-                Comprobante <span className="text-red-400">*</span>
-              </label>
+              <div className="flex justify-between items-end mb-1">
+                <label htmlFor="venta-comprobante" className="block text-sm font-medium text-text-muted">
+                  Comprobante <span className="text-red-400">*</span>
+                </label>
+                <button type="button" onClick={() => {
+                  sessionStorage.setItem('ventasDraft', JSON.stringify(formData));
+                  navigate('/comprobantes', { state: { returnTo: '/ventas' } });
+                }} className="text-xs text-primary hover:underline flex items-center gap-1">
+                  <Plus size={12} /> Nuevo Tipo
+                </button>
+              </div>
               <Select
                 id="venta-comprobante"
                 value={formData.id_tipo_comprobante}
@@ -303,7 +329,7 @@ export default function VentasView() {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="text-text-muted">Cliente</div>
-                <div className="font-medium">{detailModal.cliente?.nombre || '—'}</div>
+                <div className="font-medium">{detailModal.cliente?.nombres || '—'}</div>
               </div>
               <div>
                 <div className="text-text-muted">Comprobante</div>

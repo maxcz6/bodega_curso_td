@@ -4,11 +4,14 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
 import { useCrud } from '../hooks/useCrud';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const EMPTY_FORM = { nombre: '', email: '', telefono: '', documento: '' };
+const EMPTY_FORM = { nombres: '', direccion: '', telefono: '', dni_ruc: '' };
 
 export default function ClientesView() {
   const { items: clientes, loading, error, createItem, updateItem, deleteItem, clearError } = useCrud('/clientes', 'id_cliente');
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [formData, setFormData] = useState(EMPTY_FORM);
@@ -18,9 +21,9 @@ export default function ClientesView() {
   const [search, setSearch] = useState('');
 
   const filtered = clientes.filter(c =>
-    c.nombre?.toLowerCase().includes(search.toLowerCase()) ||
-    c.email?.toLowerCase().includes(search.toLowerCase()) ||
-    c.documento?.toLowerCase().includes(search.toLowerCase())
+    c.nombres?.toLowerCase().includes(search.toLowerCase()) ||
+    c.direccion?.toLowerCase().includes(search.toLowerCase()) ||
+    c.dni_ruc?.toLowerCase().includes(search.toLowerCase())
   );
 
   const openNew = () => {
@@ -32,10 +35,10 @@ export default function ClientesView() {
 
   const openEdit = (cli) => {
     setFormData({
-      nombre: cli.nombre || '',
-      email: cli.email || '',
+      nombres: cli.nombres || '',
+      direccion: cli.direccion || '',
       telefono: cli.telefono || '',
-      documento: cli.documento || '',
+      dni_ruc: cli.dni_ruc || '',
     });
     setEditingId(cli.id_cliente);
     setFormError(null);
@@ -59,6 +62,10 @@ export default function ClientesView() {
         await createItem(formData);
       }
       closeModal();
+      
+      if (location.state?.returnTo) {
+        navigate(location.state.returnTo);
+      }
     } catch (err) {
       setFormError(err.response?.data?.message || 'Error al guardar el cliente');
     } finally {
@@ -76,8 +83,8 @@ export default function ClientesView() {
   };
 
   // Genera iniciales para el avatar
-  const getInitials = (nombre) =>
-    nombre?.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase() || '?';
+  const getInitials = (nombres) =>
+    nombres?.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase() || '?';
 
   // Color de avatar basado en nombre
   const avatarColors = [
@@ -87,7 +94,7 @@ export default function ClientesView() {
     'bg-orange-400/20 text-orange-400',
     'bg-pink-400/20 text-pink-400',
   ];
-  const getAvatarColor = (nombre) => avatarColors[(nombre?.charCodeAt(0) || 0) % avatarColors.length];
+  const getAvatarColor = (nombres) => avatarColors[(nombres?.charCodeAt(0) || 0) % avatarColors.length];
 
   return (
     <div className="space-y-6" role="main" aria-label="Gestión de clientes">
@@ -99,10 +106,17 @@ export default function ClientesView() {
             {clientes.length > 0 ? `${clientes.length} clientes registrados` : 'Gestiona el directorio de clientes'}
           </p>
         </div>
-        <Button onClick={openNew} className="gap-2 self-start sm:self-auto" id="btn-nuevo-cliente">
-          <Plus size={18} />
-          Nuevo Cliente
-        </Button>
+        <div className="flex gap-2 self-start sm:self-auto">
+          {location.state?.returnTo && (
+            <Button variant="outline" onClick={() => navigate(location.state.returnTo)}>
+              Volver a Ventas
+            </Button>
+          )}
+          <Button onClick={openNew} className="gap-2" id="btn-nuevo-cliente">
+            <Plus size={18} />
+            Nuevo Cliente
+          </Button>
+        </div>
       </div>
 
       {/* Error global */}
@@ -153,15 +167,15 @@ export default function ClientesView() {
               role="listitem"
             >
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${getAvatarColor(cli.nombre)}`}>
-                  {getInitials(cli.nombre)}
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${getAvatarColor(cli.nombres)}`}>
+                  {getInitials(cli.nombres)}
                 </div>
                 <div>
-                  <div className="font-medium text-text">{cli.nombre}</div>
+                  <div className="font-medium text-text">{cli.nombres}</div>
                   <div className="text-sm text-text-muted flex flex-wrap gap-x-3">
-                    {cli.email && <span>{cli.email}</span>}
+                    {cli.direccion && <span>{cli.direccion}</span>}
                     {cli.telefono && <span>{cli.telefono}</span>}
-                    {cli.documento && <span className="font-mono text-xs">DNI: {cli.documento}</span>}
+                    {cli.dni_ruc && <span className="font-mono text-xs">DNI/RUC: {cli.dni_ruc}</span>}
                   </div>
                 </div>
               </div>
@@ -170,7 +184,7 @@ export default function ClientesView() {
                   variant="outline"
                   size="sm"
                   onClick={() => openEdit(cli)}
-                  aria-label={`Editar ${cli.nombre}`}
+                  aria-label={`Editar ${cli.nombres}`}
                   id={`btn-editar-cli-${cli.id_cliente}`}
                 >
                   <Edit2 size={14} />
@@ -178,9 +192,9 @@ export default function ClientesView() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleDelete(cli.id_cliente, cli.nombre)}
+                  onClick={() => handleDelete(cli.id_cliente, cli.nombres)}
                   className="text-red-400 hover:bg-red-400/10 hover:border-red-400/40"
-                  aria-label={`Eliminar ${cli.nombre}`}
+                  aria-label={`Eliminar ${cli.nombres}`}
                   id={`btn-eliminar-cli-${cli.id_cliente}`}
                 >
                   <Trash2 size={14} />
@@ -207,21 +221,21 @@ export default function ClientesView() {
             </label>
             <Input
               id="cli-nombre"
-              placeholder="Nombre completo"
-              value={formData.nombre}
-              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+              placeholder="Nombres completos"
+              value={formData.nombres}
+              onChange={(e) => setFormData({ ...formData, nombres: e.target.value })}
               required
               autoFocus
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label htmlFor="cli-documento" className="block text-sm font-medium text-text-muted">DNI / Documento</label>
+              <label htmlFor="cli-documento" className="block text-sm font-medium text-text-muted">DNI / RUC</label>
               <Input
                 id="cli-documento"
                 placeholder="12345678"
-                value={formData.documento}
-                onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
+                value={formData.dni_ruc}
+                onChange={(e) => setFormData({ ...formData, dni_ruc: e.target.value })}
               />
             </div>
             <div className="space-y-1">
@@ -235,13 +249,12 @@ export default function ClientesView() {
             </div>
           </div>
           <div className="space-y-1">
-            <label htmlFor="cli-email" className="block text-sm font-medium text-text-muted">Email</label>
+            <label htmlFor="cli-direccion" className="block text-sm font-medium text-text-muted">Dirección</label>
             <Input
-              id="cli-email"
-              type="email"
-              placeholder="cliente@email.com"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              id="cli-direccion"
+              placeholder="Av. Ejemplo 123"
+              value={formData.direccion}
+              onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
             />
           </div>
           <div className="flex gap-3 pt-2">

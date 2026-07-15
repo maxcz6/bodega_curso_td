@@ -7,10 +7,45 @@ const normalizedBaseURL = configuredBase.endsWith('/api')
 
 const api = axios.create({
   baseURL: normalizedBaseURL,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
+    'Accept': 'application/json',
+  },
 });
+
+// Caché en memoria: guarda respuestas GET por 30 segundos
+const cache = new Map();
+const CACHE_TTL = 30_000;
+
+api.interceptors.request.use((config) => {
+  if (config.method === 'get') {
+    const key = config.url + JSON.stringify(config.params ?? {});
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.ts < CACHE_TTL) {
+      // Cancela la petición y devuelve datos cacheados
+      config._cached = hit.data;
+      config._cacheHit = true;
+    }
+  }
+  return config;
+});
+
+api.interceptors.response.use((response) => {
+  if (response.config.method === 'get') {
+    const key = response.config.url + JSON.stringify(response.config.params ?? {});
+    cache.set(key, { data: response.data, ts: Date.now() });
+  }
+  return response;
+});
+
+// Función para invalidar caché de un endpoint (llamar tras POST/PUT/DELETE)
+export function invalidateCache(endpoint) {
+  for (const key of cache.keys()) {
+    if (key.startsWith(endpoint)) {
+      cache.delete(key);
+    }
+  }
+}
 
 export default api;

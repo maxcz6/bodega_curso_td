@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TipoComprobanteController;
 
 // ==========================================
 // RUTAS DE LA API (Sin Autenticación)
@@ -34,8 +35,8 @@ Route::apiResource('productos', ProductoController::class);
 // -- Operaciones de Negocio --
 
 // Ventas
-// Lista los tipos de comprobantes (Boleta, Factura, etc.)
-Route::get('tipo-comprobantes', [VentaController::class, 'getTipoComprobantes']);
+// Tipo de Comprobantes
+Route::apiResource('tipo-comprobantes', TipoComprobanteController::class);
 // Permite listar, ver el detalle y crear (store) una nueva venta. No se permite editar/borrar por consistencia.
 Route::apiResource('ventas', VentaController::class)->only(['index', 'show', 'store']);
 

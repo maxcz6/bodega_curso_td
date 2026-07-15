@@ -15,23 +15,27 @@ class VentaController extends Controller
 {
     public function index()
     {
-        $ventas = Venta::with(['cliente', 'usuario', 'tipoComprobante'])
+        $ventas = Venta::select('id_venta','numero_comprobante','fecha_venta','total','id_cliente','id_tipo_comprobante')
+            ->with([
+                'cliente:id_cliente,nombres',
+                'tipoComprobante:id_tipo_comprobante,nombre',
+            ])
             ->orderBy('id_venta', 'desc')
+            ->limit(200)
             ->get();
 
         return response()->json([
             'success' => true,
             'data' => $ventas
-        ]);
+        ])->header('Cache-Control', 'no-store');
     }
 
     public function show($id)
     {
         $venta = Venta::with([
-            'cliente',
-            'usuario',
-            'tipoComprobante',
-            'detalles.producto.categoria'
+            'cliente:id_cliente,nombres',
+            'tipoComprobante:id_tipo_comprobante,nombre',
+            'detalles.producto:id_producto,nombre,codigo_barras',
         ])->find($id);
 
         if (!$venta) {
@@ -72,7 +76,7 @@ class VentaController extends Controller
                 $id_tipo_comprobante = intval($request->id_tipo_comprobante);
                 
                 // 1. Generar número de comprobante único y correlativo
-                $prefijo = ($id_tipo_comprobante === 1) ? 'B001' : 'F001';
+                $prefijo = ($id_tipo_comprobante === 1) ? 'B001' : (($id_tipo_comprobante === 2) ? 'F001' : 'T' . str_pad($id_tipo_comprobante, 3, '0', STR_PAD_LEFT));
                 
                 $ultimaVenta = Venta::where('id_tipo_comprobante', $id_tipo_comprobante)
                     ->where('numero_comprobante', 'like', $prefijo . '-%')
@@ -195,14 +199,5 @@ class VentaController extends Controller
                 'error' => $e->getMessage()
             ], 400);
         }
-    }
-
-    public function getTipoComprobantes()
-    {
-        $tipos = TipoComprobante::all();
-        return response()->json([
-            'success' => true,
-            'data' => $tipos
-        ]);
     }
 }
