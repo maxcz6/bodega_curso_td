@@ -294,3 +294,50 @@ cd ..\frontend_curso
 npm install
 npm run dev
 ```
+
+----------------------------------------------------------------
+                    RUTAS PARA POSTMAN 
+----------------------------------------------------------------
+Rutas que puedes probar:
+
+Dashboard
+
+GET /api/dashboard/stats
+controlador: DashboardController.php
+Categorías
+
+GET /api/categorias
+GET /api/categorias/{id}
+POST /api/categorias
+PUT /api/categorias/{id}
+DELETE /api/categorias/{id}
+controlador: CategoriaController.php
+Clientes
+
+GET /api/clientes
+GET /api/clientes/{id}
+POST /api/clientes
+PUT /api/clientes/{id}
+DELETE /api/clientes/{id}
+controlador: ClienteController.php
+Productos
+
+GET /api/productos
+GET /api/productos/{id}
+POST /api/productos
+PUT /api/productos/{id}
+DELETE /api/productos/{id}
+GET /api/productos/bajo-stock
+controlador: ProductoController.php
+Ventas
+
+GET /api/ventas
+GET /api/ventas/{id}
+POST /api/ventas
+controlador: VentaController.php
+Inventario
+
+GET /api/motivos-movimiento
+GET /api/inventario/movimientos
+POST /api/inventario/movimientos
+controlador: MovimientoController.php
