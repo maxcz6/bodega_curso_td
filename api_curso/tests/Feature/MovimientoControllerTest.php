@@ -30,7 +30,10 @@ class MovimientoControllerTest extends TestCase
 
     private function seedBase(): array
     {
-        \DB::table('usuarios')->insert([
+        // insertOrIgnore: evita error de clave duplicada si el registro ya existe.
+        // Esto es necesario porque RefreshDatabase recrea la DB por test, pero
+        // dentro del mismo test podría llamarse seedBase más de una vez.
+        \DB::table('usuarios')->insertOrIgnore([
             'id_usuario' => 1,
             'nombres'    => 'Admin',
             'username'   => 'admin',
@@ -38,14 +41,14 @@ class MovimientoControllerTest extends TestCase
             'estado'     => 1,
         ]);
 
-        \DB::table('motivos_movimiento')->insert([
+        \DB::table('motivos_movimiento')->insertOrIgnore([
             ['id_motivo' => 1, 'nombre' => 'Compra'],
             ['id_motivo' => 2, 'nombre' => 'Venta'],
             ['id_motivo' => 3, 'nombre' => 'Ajuste'],
             ['id_motivo' => 4, 'nombre' => 'Merma'],
         ]);
 
-        $idCat = \DB::table('categorias')->insertGetId(['nombre' => 'General']);
+        $idCat = \DB::table('categorias')->insertGetId(['nombre' => 'General-' . uniqid()]);
 
         $producto = Producto::create([
             'nombre'        => 'Producto Mov',

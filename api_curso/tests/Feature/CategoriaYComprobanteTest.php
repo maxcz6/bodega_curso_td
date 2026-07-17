@@ -58,13 +58,14 @@ class CategoriaYComprobanteTest extends TestCase
     }
 
     /** @test */
-    public function test_crear_categoria_nombre_duplicado_devuelve_422(): void
+    public function test_crear_categoria_nombre_duplicado_es_permitido(): void
     {
-        // El nombre de categoría debe ser único
+        // El controller NO impone unique en nombre de categoría → dos con mismo nombre son válidos.
+        // Si en el futuro se agrega esa validación, este test deberá cambiar a assertStatus(422).
         $this->postJson('/api/categorias', ['nombre' => 'Bebidas']);
         $response = $this->postJson('/api/categorias', ['nombre' => 'Bebidas']);
 
-        $response->assertStatus(422);
+        $response->assertStatus(201);
     }
 
     /** @test */

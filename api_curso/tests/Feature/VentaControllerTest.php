@@ -32,8 +32,8 @@ class VentaControllerTest extends TestCase
 
     private function seedBase(): array
     {
-        // Usuario requerido por la tabla ventas (id_usuario=1)
-        \DB::table('usuarios')->insert([
+        // insertOrIgnore: previene crash por clave duplicada si se llama varias veces
+        \DB::table('usuarios')->insertOrIgnore([
             'id_usuario' => 1,
             'nombres'    => 'Admin',
             'username'   => 'admin',
@@ -41,25 +41,15 @@ class VentaControllerTest extends TestCase
             'estado'     => 1,
         ]);
 
-        // Tipo de comprobante
-        \DB::table('tipo_comprobante')->insert([
-            'id_tipo_comprobante' => 1,
-            'nombre'              => 'Boleta',
-        ]);
-        \DB::table('tipo_comprobante')->insert([
-            'id_tipo_comprobante' => 2,
-            'nombre'              => 'Factura',
+        \DB::table('tipo_comprobante')->insertOrIgnore([
+            ['id_tipo_comprobante' => 1, 'nombre' => 'Boleta'],
+            ['id_tipo_comprobante' => 2, 'nombre' => 'Factura'],
         ]);
 
-        // Categoría
-        $idCat = \DB::table('categorias')->insertGetId([
-            'nombre' => 'General',
-        ]);
+        $idCat = \DB::table('categorias')->insertGetId(['nombre' => 'General-' . uniqid()]);
 
-        // Motivo movimiento (requerido por VentaController al registrar salida)
-        \DB::table('motivos_movimiento')->insert([
-            'id_motivo' => 2,
-            'nombre'    => 'Venta',
+        \DB::table('motivos_movimiento')->insertOrIgnore([
+            ['id_motivo' => 2, 'nombre' => 'Venta'],
         ]);
 
         // Producto con stock disponible
