@@ -14,6 +14,11 @@ use App\Http\Controllers\TipoComprobanteController;
 // RUTAS DE LA API (Sin Autenticación)
 // ==========================================
 
+// Rutas de Autenticación (Login / Logout / Perfil)
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::get('/auth/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
+
 // -- Dashboard --
 // Obtiene estadísticas generales para la pantalla principal (ventas, stock, etc.)
 Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);

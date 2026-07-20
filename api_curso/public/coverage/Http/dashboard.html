@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /var/www/html/app/Http</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=12.5.7" rel="stylesheet" type="text/css">
+  <link href="../_css/billboard.min.css?v=12.5.7" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=12.5.7" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/var/www/html/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Http</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controllers/AuthController.php.html#11">App\Http\Controllers\AuthController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#9">App\Http\Controllers\TipoComprobanteController</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#9">App\Http\Controllers\TipoComprobanteController</a></td><td class="text-right">0.0%</td><td class="text-right">11</td><td class="text-right">132</td></tr>
+       <tr><td><a href="Controllers/AuthController.php.html#11">App\Http\Controllers\AuthController</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controllers/AuthController.php.html#13"><abbr title="App\Http\Controllers\AuthController::login">login</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/AuthController.php.html#78"><abbr title="App\Http\Controllers\AuthController::logout">logout</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/AuthController.php.html#88"><abbr title="App\Http\Controllers\AuthController::me">me</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#11"><abbr title="App\Http\Controllers\TipoComprobanteController::index">index</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#20"><abbr title="App\Http\Controllers\TipoComprobanteController::store">store</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#46"><abbr title="App\Http\Controllers\TipoComprobanteController::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#63"><abbr title="App\Http\Controllers\TipoComprobanteController::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#94"><abbr title="App\Http\Controllers\TipoComprobanteController::destroy">destroy</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controllers/AuthController.php.html#13"><abbr title="App\Http\Controllers\AuthController::login">login</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#63"><abbr title="App\Http\Controllers\TipoComprobanteController::update">update</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#94"><abbr title="App\Http\Controllers\TipoComprobanteController::destroy">destroy</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#20"><abbr title="App\Http\Controllers\TipoComprobanteController::store">store</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="Controllers/TipoComprobanteController.php.html#46"><abbr title="App\Http\Controllers\TipoComprobanteController::show">show</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.7</a> using <a href="https://www.php.net/" target="_top">PHP 8.4.23</a> and <a href="https://phpunit.de/">PHPUnit 12.5.30</a> at Mon Jul 20 21:57:19 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/billboard.pkgd.min.js?v=12.5.7" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,9,"Controllers\/AuthController.php.html#11","App\\Http\\Controllers\\AuthController","90"],[0,11,"Controllers\/TipoComprobanteController.php.html#9","App\\Http\\Controllers\\TipoComprobanteController","132"],[100,11,"Controllers\/CategoriaController.php.html#9","App\\Http\\Controllers\\CategoriaController","11"],[100,11,"Controllers\/ClienteController.php.html#9","App\\Http\\Controllers\\ClienteController","11"],[100,0,"Controllers\/Controller.php.html#5","App\\Http\\Controllers\\Controller","0"],[100,5,"Controllers\/DashboardController.php.html#11","App\\Http\\Controllers\\DashboardController","5"],[100,10,"Controllers\/MovimientoController.php.html#12","App\\Http\\Controllers\\MovimientoController","10"],[100,16,"Controllers\/ProductoController.php.html#9","App\\Http\\Controllers\\ProductoController","16"],[100,14,"Controllers\/VentaController.php.html#14","App\\Http\\Controllers\\VentaController","14"]]</script>
+  <script type="application/json" id="complexity_method">[[0,7,"Controllers\/AuthController.php.html#13","App\\Http\\Controllers\\AuthController::login","56"],[0,1,"Controllers\/AuthController.php.html#78","App\\Http\\Controllers\\AuthController::logout","2"],[0,1,"Controllers\/AuthController.php.html#88","App\\Http\\Controllers\\AuthController::me","2"],[0,1,"Controllers\/TipoComprobanteController.php.html#11","App\\Http\\Controllers\\TipoComprobanteController::index","2"],[0,2,"Controllers\/TipoComprobanteController.php.html#20","App\\Http\\Controllers\\TipoComprobanteController::store","6"],[0,2,"Controllers\/TipoComprobanteController.php.html#46","App\\Http\\Controllers\\TipoComprobanteController::show","6"],[0,3,"Controllers\/TipoComprobanteController.php.html#63","App\\Http\\Controllers\\TipoComprobanteController::update","12"],[0,3,"Controllers\/TipoComprobanteController.php.html#94","App\\Http\\Controllers\\TipoComprobanteController::destroy","12"],[100,1,"Controllers\/CategoriaController.php.html#11","App\\Http\\Controllers\\CategoriaController::index","1"],[100,2,"Controllers\/CategoriaController.php.html#20","App\\Http\\Controllers\\CategoriaController::store","2"],[100,2,"Controllers\/CategoriaController.php.html#43","App\\Http\\Controllers\\CategoriaController::show","2"],[100,3,"Controllers\/CategoriaController.php.html#60","App\\Http\\Controllers\\CategoriaController::update","3"],[100,3,"Controllers\/CategoriaController.php.html#92","App\\Http\\Controllers\\CategoriaController::destroy","3"],[100,1,"Controllers\/ClienteController.php.html#11","App\\Http\\Controllers\\ClienteController::index","1"],[100,2,"Controllers\/ClienteController.php.html#20","App\\Http\\Controllers\\ClienteController::store","2"],[100,2,"Controllers\/ClienteController.php.html#45","App\\Http\\Controllers\\ClienteController::show","2"],[100,3,"Controllers\/ClienteController.php.html#62","App\\Http\\Controllers\\ClienteController::update","3"],[100,3,"Controllers\/ClienteController.php.html#96","App\\Http\\Controllers\\ClienteController::destroy","3"],[100,5,"Controllers\/DashboardController.php.html#13","App\\Http\\Controllers\\DashboardController::getStats","5"],[100,4,"Controllers\/MovimientoController.php.html#14","App\\Http\\Controllers\\MovimientoController::index","4"],[100,5,"Controllers\/MovimientoController.php.html#39","App\\Http\\Controllers\\MovimientoController::store","5"],[100,1,"Controllers\/MovimientoController.php.html#109","App\\Http\\Controllers\\MovimientoController::getMotivos","1"],[100,1,"Controllers\/ProductoController.php.html#11","App\\Http\\Controllers\\ProductoController::index","1"],[100,5,"Controllers\/ProductoController.php.html#22","App\\Http\\Controllers\\ProductoController::store","5"],[100,2,"Controllers\/ProductoController.php.html#58","App\\Http\\Controllers\\ProductoController::show","2"],[100,3,"Controllers\/ProductoController.php.html#75","App\\Http\\Controllers\\ProductoController::update","3"],[100,4,"Controllers\/ProductoController.php.html#114","App\\Http\\Controllers\\ProductoController::destroy","4"],[100,1,"Controllers\/ProductoController.php.html#146","App\\Http\\Controllers\\ProductoController::lowStock","1"],[100,1,"Controllers\/VentaController.php.html#16","App\\Http\\Controllers\\VentaController::index","1"],[100,2,"Controllers\/VentaController.php.html#33","App\\Http\\Controllers\\VentaController::show","2"],[100,11,"Controllers\/VentaController.php.html#54","App\\Http\\Controllers\\VentaController::store","11"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [2,0,0,0,0,0,0,0,0,0,0,7])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [8,0,0,0,0,0,0,0,0,0,0,23])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

@@ -42,7 +42,15 @@ class AuthController extends Controller
         }
 
         // Verifica hash de Laravel o texto plano directo (del seed de SQL)
-        $passwordMatches = Hash::check($request->password, $user->password) || ($request->password === $user->password);
+        $passwordMatches = false;
+        try {
+            $passwordMatches = Hash::check($request->password, $user->password);
+        } catch (\RuntimeException $e) {
+            // No es un hash Bcrypt válido
+        }
+        if (!$passwordMatches) {
+            $passwordMatches = ($request->password === $user->password);
+        }
 
         if (!$passwordMatches) {
             return response()->json([
