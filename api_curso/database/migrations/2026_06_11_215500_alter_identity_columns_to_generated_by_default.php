@@ -10,7 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Solo aplicar si estamos conectados a PostgreSQL (Supabase o Producción)
+        // Solo aplicar si estamos conectados a PostgreSQL (no aplica en entorno local con MySQL)
         if (DB::getDriverName() === 'pgsql') {
             $tables = [
                 'usuarios' => 'id_usuario',

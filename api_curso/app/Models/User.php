@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SyncsToSupabase;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'usuarios';
     protected $primaryKey = 'id_usuario';

@@ -9,6 +9,7 @@
         "php": "^8.4",
         "knuckleswtf/scribe": "^5.11",
         "laravel/framework": "^13.8",
+        "laravel/pulse": "^1.7",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0"
     },
@@ -30,7 +31,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "App\\": "src/"
         }
     },
     "scripts": {

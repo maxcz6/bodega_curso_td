@@ -295,49 +295,884 @@ npm install
 npm run dev
 ```
 
-----------------------------------------------------------------
-                    RUTAS PARA POSTMAN 
-----------------------------------------------------------------
-Rutas que puedes probar:
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 
-Dashboard
+## Rutas de la API (Endpoints)
 
-GET /api/dashboard/stats
-controlador: DashboardController.php
-Categorías
+> Base URL: `http://localhost:8000`  
+> Todas las rutas llevan el prefijo `/api`  
+> Formato de datos: `Content-Type: application/json`
 
-GET /api/categorias
-GET /api/categorias/{id}
-POST /api/categorias
-PUT /api/categorias/{id}
-DELETE /api/categorias/{id}
-controlador: CategoriaController.php
-Clientes
+---
 
-GET /api/clientes
-GET /api/clientes/{id}
-POST /api/clientes
-PUT /api/clientes/{id}
-DELETE /api/clientes/{id}
-controlador: ClienteController.php
-Productos
+###  Dashboard
+**Archivo:** `app/Http/Controllers/DashboardController.php`
 
-GET /api/productos
-GET /api/productos/{id}
-POST /api/productos
-PUT /api/productos/{id}
-DELETE /api/productos/{id}
-GET /api/productos/bajo-stock
-controlador: ProductoController.php
-Ventas
+Muestra estadísticas generales del sistema: ventas del día, productos activos, productos con bajo stock, gráfico de ventas de los últimos 7 días y top 5 productos más vendidos.
 
-GET /api/ventas
-GET /api/ventas/{id}
-POST /api/ventas
-controlador: VentaController.php
-Inventario
+---
 
-GET /api/motivos-movimiento
-GET /api/inventario/movimientos
-POST /api/inventario/movimientos
-controlador: MovimientoController.php
+#### `GET /api/dashboard/stats`
+Retorna un resumen completo del estado actual de la bodega.
+
+**No requiere cuerpo (body)**
+
+**Respuesta exitosa `200`:**
+```json
+{
+  "success": true,
+  "data": {
+    "ventas_hoy": 250.00,
+    "total_productos": 48,
+    "bajo_stock_count": 3,
+    "ventas_semanales": [
+      { "fecha": "14/07", "total": 120.00 },
+      { "fecha": "15/07", "total": 300.50 }
+    ],
+    "top_productos": [
+      { "nombre": "Arroz Extra", "cantidad": 50, "total_monto": 175.00 }
+    ],
+    "bajo_stock_productos": [
+      { "id_producto": 5, "nombre": "Azúcar", "stock_actual": 2, "stock_minimo": 5 }
+    ]
+  }
+}
+```
+
+---
+
+###  Categorías
+**Archivo:** `app/Http/Controllers/CategoriaController.php`
+
+Gestiona las categorías a las que pertenecen los productos (ej. Lácteos, Bebidas, Abarrotes).
+
+---
+
+#### `GET /api/categorias`
+Lista todas las categorías registradas.
+
+**No requiere cuerpo**
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    { "id_categoria": 1, "nombre": "Abarrotes", "descripcion": "Productos secos" },
+    { "id_categoria": 2, "nombre": "Bebidas",   "descripcion": null }
+  ]
+}
+```
+
+---
+
+#### `GET /api/categorias/{id}`
+Obtiene una categoría por su ID.
+
+**No requiere cuerpo**
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": { "id_categoria": 1, "nombre": "Abarrotes", "descripcion": "Productos secos" }
+}
+```
+
+**Respuesta `404` — no existe:**
+```json
+{ "success": false, "message": "Categoría no encontrada" }
+```
+
+---
+
+#### `POST /api/categorias`
+Crea una nueva categoría.
+
+**Body (JSON):**
+```json
+{
+  "nombre": "Lácteos",
+  "descripcion": "Leches, quesos y yogures"
+}
+```
+
+| Campo         | Tipo   | Obligatorio | Reglas             |
+|---------------|--------|-------------|--------------------|
+| `nombre`      | string | Sí          | máx. 100 caracteres|
+| `descripcion` | string | No          | máx. 255 caracteres|
+
+**Respuesta `201`:**
+```json
+{
+  "success": true,
+  "message": "Categoría creada con éxito",
+  "data": { "id_categoria": 3, "nombre": "Lácteos", "descripcion": "Leches, quesos y yogures" }
+}
+```
+
+---
+
+#### `PUT /api/categorias/{id}`
+Actualiza una categoría existente.
+
+**Body (JSON):**
+```json
+{
+  "nombre": "Lácteos y Derivados",
+  "descripcion": "Actualizado"
+}
+```
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "message": "Categoría actualizada con éxito",
+  "data": { "id_categoria": 3, "nombre": "Lácteos y Derivados", "descripcion": "Actualizado" }
+}
+```
+
+---
+
+#### `DELETE /api/categorias/{id}`
+Elimina una categoría. **Falla si tiene productos asociados.**
+
+**No requiere cuerpo**
+
+**Respuesta `200`:**
+```json
+{ "success": true, "message": "Categoría eliminada con éxito" }
+```
+
+**Respuesta `400` — tiene productos:**
+```json
+{ "success": false, "message": "No se puede eliminar la categoría porque contiene productos asociados" }
+```
+
+---
+
+###  Clientes
+**Archivo:** `app/Http/Controllers/ClienteController.php`
+
+Gestiona el registro de clientes que realizan compras en la bodega.
+
+---
+
+#### `GET /api/clientes`
+Lista todos los clientes.
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    { "id_cliente": 1, "nombres": "Juan Pérez", "dni_ruc": "12345678", "telefono": "999888777", "direccion": "Av. Lima 123" }
+  ]
+}
+```
+
+---
+
+#### `GET /api/clientes/{id}`
+Obtiene un cliente por su ID.
+
+**Respuesta `404`:**
+```json
+{ "success": false, "message": "Cliente no encontrado" }
+```
+
+---
+
+#### `POST /api/clientes`
+Registra un nuevo cliente.
+
+**Body (JSON):**
+```json
+{
+  "nombres": "María García",
+  "dni_ruc": "87654321",
+  "telefono": "987654321",
+  "direccion": "Jr. Cusco 456"
+}
+```
+
+| Campo      | Tipo   | Obligatorio | Reglas             |
+|------------|--------|-------------|--------------------|
+| `nombres`  | string | Sí          | máx. 150 caracteres|
+| `dni_ruc`  | string | No          | máx. 20 caracteres |
+| `telefono` | string | No          | máx. 20 caracteres |
+| `direccion`| string | No          | máx. 255 caracteres|
+
+**Respuesta `201`:**
+```json
+{
+  "success": true,
+  "message": "Cliente creado con éxito",
+  "data": { "id_cliente": 5, "nombres": "María García", "dni_ruc": "87654321", "telefono": "987654321", "direccion": "Jr. Cusco 456" }
+}
+```
+
+---
+
+#### `PUT /api/clientes/{id}`
+Actualiza los datos de un cliente.
+
+**Body (JSON):** *(mismos campos que POST)*
+
+---
+
+#### `DELETE /api/clientes/{id}`
+Elimina un cliente. **Falla si tiene ventas registradas.**
+
+**Respuesta `400`:**
+```json
+{ "success": false, "message": "No se puede eliminar el cliente porque tiene ventas registradas a su nombre" }
+```
+
+---
+
+### 🟧 Productos
+**Archivo:** `app/Http/Controllers/ProductoController.php`
+
+Gestiona el catálogo de productos de la bodega con sus precios y stock.
+
+---
+
+#### `GET /api/productos`
+Lista todos los productos con su categoría.
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id_producto": 1,
+      "nombre": "Arroz Extra",
+      "codigo_barras": "7750000001",
+      "precio_venta": "3.50",
+      "precio_compra": "2.00",
+      "stock_actual": 80,
+      "stock_minimo": 10,
+      "estado": true,
+      "id_categoria": 1,
+      "categoria": { "id_categoria": 1, "nombre": "Abarrotes" }
+    }
+  ]
+}
+```
+
+---
+
+#### `GET /api/productos/{id}`
+Obtiene un producto con su categoría.
+
+**Respuesta `404`:**
+```json
+{ "success": false, "message": "Producto no encontrado" }
+```
+
+---
+
+#### `POST /api/productos`
+Registra un nuevo producto.
+
+**Body (JSON):**
+```json
+{
+  "nombre": "Leche Gloria",
+  "codigo_barras": "7751234000001",
+  "descripcion": "Leche entera evaporada 400g",
+  "precio_compra": 2.80,
+  "precio_venta": 4.00,
+  "stock_actual": 50,
+  "stock_minimo": 10,
+  "estado": true,
+  "id_categoria": 2
+}
+```
+
+| Campo           | Tipo    | Obligatorio | Reglas                                 |
+|-----------------|---------|-------------|----------------------------------------|
+| `nombre`        | string  |  Sí         | máx. 150 caracteres                    |
+| `precio_compra` | decimal |  Sí         | mayor o igual a 0                      |
+| `precio_venta`  | decimal |  Sí         | mayor o igual a 0                      |
+| `id_categoria`  | integer |  Sí         | debe existir en la tabla `categorias`  |
+| `codigo_barras` | string  |  No         | único, máx. 50 caracteres              |
+| `descripcion`   | string  |  No         | texto libre                            |
+| `stock_actual`  | integer |  No         | por defecto: `0`                       |
+| `stock_minimo`  | integer |  No         | por defecto: `5`                       |
+| `estado`        | boolean |  No         | por defecto: `true`                    |
+
+**Respuesta `201`:**
+```json
+{
+  "success": true,
+  "message": "Producto creado con éxito",
+  "data": { "id_producto": 10, "nombre": "Leche Gloria", "precio_venta": "4.00", ... }
+}
+```
+
+---
+
+#### `PUT /api/productos/{id}`
+Actualiza un producto existente.
+
+**Body (JSON):** *(mismos campos que POST)*
+
+---
+
+#### `DELETE /api/productos/{id}`
+Elimina un producto. Si tiene historial (ventas o movimientos), **solo lo desactiva** en lugar de borrarlo.
+
+**Respuesta `200` — eliminado:**
+```json
+{ "success": true, "message": "Producto eliminado de forma permanente con éxito" }
+```
+
+**Respuesta `200` — desactivado por historial:**
+```json
+{ "success": true, "message": "El producto tiene historial de transacciones. Se ha desactivado en vez de eliminarse de forma permanente." }
+```
+
+---
+
+#### `GET /api/productos/bajo-stock`
+Lista los productos cuyo `stock_actual` es menor o igual a su `stock_minimo`.
+
+**No requiere cuerpo**
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    { "id_producto": 5, "nombre": "Azúcar", "stock_actual": 2, "stock_minimo": 5, "categoria": { "nombre": "Abarrotes" } }
+  ]
+}
+```
+
+---
+
+###  Ventas
+**Archivo:** `app/Http/Controllers/VentaController.php`
+
+Registra y consulta ventas. Al crear una venta, automáticamente descuenta el stock de cada producto vendido y genera un movimiento de inventario (tipo SALIDA).
+
+---
+
+#### `GET /api/ventas`
+Lista las últimas 200 ventas ordenadas de más reciente a más antigua.
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id_venta": 15,
+      "numero_comprobante": "B001-000015",
+      "fecha_venta": "2026-07-20T13:00:00",
+      "total": "35.00",
+      "id_cliente": 2,
+      "id_tipo_comprobante": 1,
+      "cliente": { "id_cliente": 2, "nombres": "Juan Pérez" },
+      "tipoComprobante": { "id_tipo_comprobante": 1, "nombre": "Boleta" }
+    }
+  ]
+}
+```
+
+---
+
+#### `GET /api/ventas/{id}`
+Obtiene el detalle completo de una venta, incluyendo cada producto vendido.
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": {
+    "id_venta": 15,
+    "numero_comprobante": "B001-000015",
+    "subtotal": "35.00",
+    "igv": "0.00",
+    "total": "35.00",
+    "cliente": { "nombres": "Juan Pérez" },
+    "tipoComprobante": { "nombre": "Boleta" },
+    "detalles": [
+      {
+        "id_detalle": 20,
+        "cantidad": 3,
+        "precio_unitario": "3.50",
+        "subtotal": "10.50",
+        "producto": { "nombre": "Arroz Extra", "codigo_barras": "7750000001" }
+      }
+    ]
+  }
+}
+```
+
+---
+
+#### `POST /api/ventas`
+Registra una nueva venta. Genera el número de comprobante automáticamente y descuenta stock.
+
+**Body (JSON):**
+```json
+{
+  "id_cliente": 2,
+  "id_tipo_comprobante": 1,
+  "items": [
+    { "id_producto": 1, "cantidad": 3 },
+    { "id_producto": 4, "cantidad": 1 }
+  ]
+}
+```
+
+| Campo                 | Tipo    | Obligatorio | Descripción                                      |
+|-----------------------|---------|-------------|--------------------------------------------------|
+| `id_cliente`          | integer |  Sí         | debe existir en `clientes`                       |
+| `id_tipo_comprobante` | integer |  Sí         | `1`=Boleta, `2`=Factura                          |
+| `items`               | array   |  Sí         | mínimo 1 ítem                                    |
+| `items[].id_producto` | integer |  Sí         | debe existir y estar activo                      |
+| `items[].cantidad`    | integer |  Sí         | mínimo `1`, no puede superar el stock disponible |
+
+> Si `id_tipo_comprobante = 2` (Factura), el IGV del 18% se desglosa automáticamente.
+
+**Respuesta `201`:**
+```json
+{
+  "success": true,
+  "message": "Venta registrada con éxito",
+  "data": { "id_venta": 16, "numero_comprobante": "B001-000016", "total": "20.50", ... }
+}
+```
+
+**Respuesta `400` — stock insuficiente o producto inactivo:**
+```json
+{
+  "success": false,
+  "message": "Error al registrar la venta",
+  "error": "Stock insuficiente para el producto 'Arroz Extra'. Disponible: 2, Solicitado: 10"
+}
+```
+
+---
+
+### Inventario / Movimientos
+**Archivo:** `app/Http/Controllers/MovimientoController.php`
+
+Registra entradas y salidas manuales de stock. Cada movimiento actualiza el `stock_actual` del producto.
+
+---
+
+#### `GET /api/motivos-movimiento`
+Lista todos los motivos disponibles (ej. Compra, Venta, Ajuste, Devolución).
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    { "id_motivo": 1, "nombre": "Compra" },
+    { "id_motivo": 2, "nombre": "Venta" },
+    { "id_motivo": 3, "nombre": "Ajuste de inventario" }
+  ]
+}
+```
+
+---
+
+#### `GET /api/movimientos`
+Lista todos los movimientos. Acepta filtros opcionales por query string.
+
+**Filtros opcionales (query params):**
+
+| Parámetro | Descripción | Ejemplo |
+|---|---|---|
+| `id_producto` | Filtra por producto | `?id_producto=3` |
+| `tipo_movimiento` | `ENTRADA` o `SALIDA` | `?tipo_movimiento=SALIDA` |
+| `id_motivo` | Filtra por motivo | `?id_motivo=1` |
+
+**Ejemplo:** `GET /api/movimientos?tipo_movimiento=ENTRADA&id_producto=3`
+
+**Respuesta `200`:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id_movimiento": 10,
+      "tipo_movimiento": "ENTRADA",
+      "cantidad": 20,
+      "stock_anterior": 30,
+      "stock_nuevo": 50,
+      "fecha_movimiento": "2026-07-20T10:00:00",
+      "observaciones": "Compra a proveedor",
+      "producto": { "nombre": "Arroz Extra" },
+      "motivo": { "nombre": "Compra" },
+      "usuario": { "nombres": "Admin" }
+    }
+  ]
+}
+```
+
+---
+
+#### `POST /api/movimientos`
+Registra un movimiento manual de inventario (entrada o salida).
+
+**Body (JSON):**
+```json
+{
+  "id_producto": 1,
+  "id_motivo": 1,
+  "tipo_movimiento": "ENTRADA",
+  "cantidad": 20,
+  "observaciones": "Compra a proveedor ABC"
+}
+```
+
+| Campo             | Tipo    | Obligatorio | Reglas                                |
+|-------------------|---------|-------------|---------------------------------------|
+| `id_producto`     | integer |  Sí         | debe existir en `productos`           |
+| `id_motivo`       | integer |  Sí         | debe existir en `motivos_movimiento`  |
+| `tipo_movimiento` | string  |  Sí         | solo `"ENTRADA"` o `"SALIDA"`         |
+| `cantidad`        | integer |  Sí         | mínimo `1`                            |
+| `observaciones`   | string  |  No         | texto libre                           |
+
+> Una `SALIDA` falla si la cantidad solicitada supera el stock disponible.
+
+**Respuesta `201`:**
+```json
+{
+  "success": true,
+  "message": "Movimiento de inventario registrado con éxito",
+  "data": {
+    "id_movimiento": 11,
+    "tipo_movimiento": "ENTRADA",
+    "cantidad": 20,
+    "stock_anterior": 30,
+    "stock_nuevo": 50,
+    "producto": { "nombre": "Arroz Extra" },
+    "motivo": { "nombre": "Compra" }
+  }
+}
+```
+
+**Respuesta `400` — stock insuficiente:**
+```json
+{
+  "success": false,
+  "message": "Error al registrar el movimiento",
+  "error": "Stock insuficiente para realizar la salida. Disponible: 5, Solicitado: 20"
+}
+```
+
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+
+## Pruebas Unitarias (PHPUnit)
+
+El proyecto incluye 40 pruebas unitarias escritas con PHPUnit, agrupadas en un solo archivo.
+ruta : api_curso/tests/Unit/PruebasTest.php
+
+### Ubicación del archivo
+
+```
+api_curso/
+└── tests/
+    └── Unit/
+        └── PruebasTest.php 
+```
+
+### ¿Qué tipo de pruebas son?
+
+Son pruebas **unitarias puras**: no necesitan base de datos ni servidor web activo.
+Cada prueba crea el modelo en memoria y verifica su configuración o ejecuta un cálculo matemático simple.
+No hacen peticiones HTTP — solo prueban la lógica interna del código.
+
+#### Clasificación de las 40 pruebas por tipo
+
+En las pruebas unitarias existen distintas categorías según qué aspecto del código verifican.
+Las 40 pruebas de este archivo se distribuyen así:
+
+| Tipo de prueba | Qué verifica | Pruebas del archivo |
+|---|---|---|
+| **Configuración** | Que el modelo apunte a la tabla correcta de la BD | 01, 04, 09, 15, 21, 25, 30, 34, 37, 38 |
+| **Clave primaria (PK)** | Que el modelo use la PK correcta (no el genérico `id`) | 02, 10, 16, 22, 26, 31 |
+| **Timestamps** | Que el modelo NO use `created_at` / `updated_at` | 03, 11 |
+| **Existencia de campo** | Que un campo esté en `$fillable` para poder guardarse | 04–08, 12–14, 17–20, 23–24, 27–29, 33, 35–36 |
+| **Seguridad / oculto** | Que el `password` esté en `$hidden` y no salga en JSON | 32 |
+| **Valor mínimo** | Que el sistema calcule correctamente el valor mínimo de stock | 40 |
+| **Límite exacto (boundary)** | Que el cálculo funcione en el borde exacto del rango (18% IGV) | 39 |
+| **Valor negativo / positivo** | Que el nuevo stock nunca sea negativo después de una salida | 40 |
+
+#### Detalle por prueba
+
+| # | Nombre | Tipo |
+|---|---|---|
+| 01 | `test_01_producto_apunta_a_tabla_correcta` | Configuración |
+| 02 | `test_02_producto_tiene_clave_primaria_id_producto` | Clave primaria |
+| 03 | `test_03_producto_no_usa_timestamps` | Timestamps |
+| 04 | `test_04_producto_tiene_nombre_en_fillable` | Existencia de campo |
+| 05 | `test_05_producto_tiene_precio_venta_en_fillable` | Existencia de campo |
+| 06 | `test_06_producto_tiene_precio_compra_en_fillable` | Existencia de campo |
+| 07 | `test_07_producto_tiene_stock_actual_en_fillable` | Existencia de campo |
+| 08 | `test_08_producto_tiene_id_categoria_en_fillable` | Existencia de campo |
+| 09 | `test_09_cliente_apunta_a_tabla_correcta` | Configuración |
+| 10 | `test_10_cliente_tiene_clave_primaria_id_cliente` | Clave primaria |
+| 11 | `test_11_cliente_no_usa_timestamps` | Timestamps |
+| 12 | `test_12_cliente_tiene_nombres_en_fillable` | Existencia de campo |
+| 13 | `test_13_cliente_tiene_dni_ruc_en_fillable` | Existencia de campo |
+| 14 | `test_14_cliente_tiene_telefono_en_fillable` | Existencia de campo |
+| 15 | `test_15_venta_apunta_a_tabla_correcta` | Configuración |
+| 16 | `test_16_venta_tiene_clave_primaria_id_venta` | Clave primaria |
+| 17 | `test_17_venta_tiene_numero_comprobante_en_fillable` | Existencia de campo |
+| 18 | `test_18_venta_tiene_total_en_fillable` | Existencia de campo |
+| 19 | `test_19_venta_tiene_igv_en_fillable` | Existencia de campo |
+| 20 | `test_20_venta_tiene_subtotal_en_fillable` | Existencia de campo |
+| 21 | `test_21_categoria_apunta_a_tabla_correcta` | Configuración |
+| 22 | `test_22_categoria_tiene_clave_primaria_id_categoria` | Clave primaria |
+| 23 | `test_23_categoria_tiene_nombre_en_fillable` | Existencia de campo |
+| 24 | `test_24_categoria_tiene_descripcion_en_fillable` | Existencia de campo |
+| 25 | `test_25_movimiento_apunta_a_tabla_correcta` | Configuración |
+| 26 | `test_26_movimiento_tiene_clave_primaria_id_movimiento` | Clave primaria |
+| 27 | `test_27_movimiento_tiene_tipo_movimiento_en_fillable` | Existencia de campo |
+| 28 | `test_28_movimiento_tiene_stock_anterior_en_fillable` | Existencia de campo |
+| 29 | `test_29_movimiento_tiene_stock_nuevo_en_fillable` | Existencia de campo |
+| 30 | `test_30_user_apunta_a_tabla_usuarios` | Configuración |
+| 31 | `test_31_user_tiene_clave_primaria_id_usuario` | Clave primaria |
+| 32 | `test_32_user_oculta_el_password_en_respuestas_json` | Seguridad / oculto |
+| 33 | `test_33_user_tiene_username_en_fillable` | Existencia de campo |
+| 34 | `test_34_detalle_venta_apunta_a_tabla_correcta` | Configuración |
+| 35 | `test_35_detalle_venta_tiene_precio_unitario_en_fillable` | Existencia de campo |
+| 36 | `test_36_detalle_venta_tiene_cantidad_en_fillable` | Existencia de campo |
+| 37 | `test_37_tipo_comprobante_apunta_a_tabla_correcta` | Configuración |
+| 38 | `test_38_motivo_movimiento_apunta_a_tabla_correcta` | Configuración |
+| 39 | `test_39_calculo_igv_factura_es_correcto` | Límite exacto (boundary) |
+| 40 | `test_40_calculo_stock_despues_de_salida_es_correcto` | Valor mínimo / positivo |
+
+---
+
+### Pasos para ejecutar las pruebas
+
+#### Paso 1 — Asegúrate de que el contenedor de la API esté corriendo
+
+```bash
+docker compose up -d
+```
+
+Verifica que el contenedor `api` esté activo:
+
+```bash
+docker compose ps
+```
+
+#### Paso 2 — Ejecutar todas las pruebas del archivo
+
+```bash
+docker exec bodega_api php artisan test --filter=PruebasTest
+```
+
+#### Paso 3 — Ver el resultado con nombre de cada prueba
+
+```bash
+docker exec bodega_api php artisan test --filter=PruebasTest --verbose
+```
+
+#### Paso 4 — Detener al primer fallo (útil para depurar)
+
+```bash
+docker exec bodega_api php artisan test --filter=PruebasTest --stop-on-failure
+```
+
+#### Paso 5 — Ejecutar todo el suite Unit (incluye otras pruebas unitarias)
+
+```bash
+docker exec bodega_api php artisan test --testsuite=Unit
+```
+
+---
+
+### ¿Qué verifica cada bloque de pruebas?
+
+#### BLOQUE 1 — Modelo `Producto` (pruebas 1 al 8)
+
+Verifica que el modelo `Producto` esté bien configurado.
+
+| # | Prueba | Qué revisa |
+|---|---|---|
+| 1 | `test_01_producto_apunta_a_tabla_correcta` | El modelo apunta a la tabla `productos` en la BD |
+| 2 | `test_02_producto_tiene_clave_primaria_id_producto` | La clave primaria es `id_producto`, no el genérico `id` |
+| 3 | `test_03_producto_no_usa_timestamps` | La tabla no tiene columnas `created_at` / `updated_at` |
+| 4 | `test_04_producto_tiene_nombre_en_fillable` | El campo `nombre` puede asignarse masivamente |
+| 5 | `test_05_producto_tiene_precio_venta_en_fillable` | El campo `precio_venta` puede guardarse al crear/actualizar |
+| 6 | `test_06_producto_tiene_precio_compra_en_fillable` | El campo `precio_compra` puede guardarse |
+| 7 | `test_07_producto_tiene_stock_actual_en_fillable` | El stock puede actualizarse con `update()` |
+| 8 | `test_08_producto_tiene_id_categoria_en_fillable` | La FK `id_categoria` puede guardarse para relacionar categorías |
+
+---
+
+#### BLOQUE 2 — Modelo `Cliente` (pruebas 9 al 14)
+
+Verifica que el modelo `Cliente` tenga correctamente definidos su tabla, PK y campos.
+
+| # | Prueba | Qué revisa |
+|---|---|---|
+| 9  | `test_09_cliente_apunta_a_tabla_correcta` | Tabla correcta: `clientes` |
+| 10 | `test_10_cliente_tiene_clave_primaria_id_cliente` | PK es `id_cliente` |
+| 11 | `test_11_cliente_no_usa_timestamps` | Sin `created_at` / `updated_at` |
+| 12 | `test_12_cliente_tiene_nombres_en_fillable` | Campo `nombres` es asignable |
+| 13 | `test_13_cliente_tiene_dni_ruc_en_fillable` | Campo `dni_ruc` es asignable |
+| 14 | `test_14_cliente_tiene_telefono_en_fillable` | Campo `telefono` es asignable |
+
+---
+
+#### BLOQUE 3 — Modelo `Venta` (pruebas 15 al 20)
+
+Verifica la configuración del modelo de ventas y sus campos financieros.
+
+| # | Prueba | Qué revisa |
+|---|---|---|
+| 15 | `test_15_venta_apunta_a_tabla_correcta` | Tabla correcta: `ventas` |
+| 16 | `test_16_venta_tiene_clave_primaria_id_venta` | PK es `id_venta` |
+| 17 | `test_17_venta_tiene_numero_comprobante_en_fillable` | El nro. de comprobante (ej. `B001-000001`) puede guardarse |
+| 18 | `test_18_venta_tiene_total_en_fillable` | El total de la venta puede guardarse |
+| 19 | `test_19_venta_tiene_igv_en_fillable` | El IGV calculado puede guardarse |
+| 20 | `test_20_venta_tiene_subtotal_en_fillable` | El subtotal puede guardarse |
+
+---
+
+#### BLOQUE 4 — Modelo `Categoria` (pruebas 21 al 24)
+
+| # | Prueba | Qué revisa |
+|---|---|---|
+| 21 | `test_21_categoria_apunta_a_tabla_correcta` | Tabla correcta: `categorias` |
+| 22 | `test_22_categoria_tiene_clave_primaria_id_categoria` | PK es `id_categoria` |
+| 23 | `test_23_categoria_tiene_nombre_en_fillable` | Campo `nombre` es asignable |
+| 24 | `test_24_categoria_tiene_descripcion_en_fillable` | Campo `descripcion` es asignable |
+
+---
+
+#### BLOQUE 5 — Modelo `MovimientoInventario` (pruebas 25 al 29)
+
+Verifica el modelo que registra cada entrada y salida de stock.
+
+| # | Prueba | Qué revisa |
+|---|---|---|
+| 25 | `test_25_movimiento_apunta_a_tabla_correcta` | Tabla: `movimientos_inventario` |
+| 26 | `test_26_movimiento_tiene_clave_primaria_id_movimiento` | PK es `id_movimiento` |
+| 27 | `test_27_movimiento_tiene_tipo_movimiento_en_fillable` | Campo `tipo_movimiento` (ENTRADA/SALIDA) es asignable |
+| 28 | `test_28_movimiento_tiene_stock_anterior_en_fillable` | El stock antes del movimiento se puede guardar |
+| 29 | `test_29_movimiento_tiene_stock_nuevo_en_fillable` | El stock resultante se puede guardar |
+
+---
+
+#### BLOQUE 6 — Modelo `User` (pruebas 30 al 33)
+
+Verifica la configuración del modelo de usuarios, especialmente la seguridad del password.
+
+| # | Prueba | Qué revisa |
+|---|---|---|
+| 30 | `test_30_user_apunta_a_tabla_usuarios` | La tabla es `usuarios` (no el genérico `users` de Laravel) |
+| 31 | `test_31_user_tiene_clave_primaria_id_usuario` | PK es `id_usuario` |
+| 32 | `test_32_user_oculta_el_password_en_respuestas_json` | El campo `password` está en `$hidden` y no aparece en JSON |
+| 33 | `test_33_user_tiene_username_en_fillable` | El `username` puede guardarse (necesario para el login) |
+
+---
+
+#### BLOQUE 7 — Modelo `DetalleVenta` (pruebas 34 al 36)
+
+Verifica el modelo que guarda cada línea (ítem) de una venta.
+
+| # | Prueba | Qué revisa |
+|---|---|---|
+| 34 | `test_34_detalle_venta_apunta_a_tabla_correcta` | Tabla: `detalle_venta` |
+| 35 | `test_35_detalle_venta_tiene_precio_unitario_en_fillable` | El precio al momento de la venta puede guardarse |
+| 36 | `test_36_detalle_venta_tiene_cantidad_en_fillable` | La cantidad vendida puede guardarse |
+
+---
+
+#### BLOQUE 8 — Modelos `TipoComprobante` y `MotivoMovimiento` (pruebas 37 y 38)
+
+| # | Prueba | Qué revisa |
+|---|---|---|
+| 37 | `test_37_tipo_comprobante_apunta_a_tabla_correcta` | Tabla: `tipo_comprobante` (la tabla no termina en `s`) |
+| 38 | `test_38_motivo_movimiento_apunta_a_tabla_correcta` | Tabla: `motivos_movimiento` |
+
+---
+
+#### BLOQUE 9 — Lógica de negocio pura (pruebas 39 y 40)
+
+Estas pruebas no tocan modelos. Prueban cálculos matemáticos del sistema directamente en PHP.
+
+| # | Prueba | Qué revisa | Cómo lo hace |
+|---|---|---|---|
+| 39 | `test_39_calculo_igv_factura_es_correcto` | Que el IGV del 18% se calcule bien en facturas | Aplica la fórmula `subtotal = total / 1.18`, verifica que de S/ 118 → subtotal=100, igv=18 |
+| 40 | `test_40_calculo_stock_despues_de_salida_es_correcto` | Que el stock se reste correctamente al vender | Simula stock=50, venta=12, verifica que el nuevo stock sea 38 y no sea negativo |
+
+---
+
+### ¿Cómo funcionan las pruebas internamente?
+
+Cada prueba sigue este patrón de 3 pasos (AAA — Arrange, Act, Assert):
+
+```
+1. ARRANGE  → Crear el modelo o los datos de entrada
+2. ACT      → Ejecutar la acción que quiero probar
+3. ASSERT   → Verificar que el resultado es el esperado
+```
+
+Ejemplo de una prueba del archivo:
+
+```php
+/** @test */
+public function test_01_producto_apunta_a_tabla_correcta(): void
+{
+    // ARRANGE: creo el modelo vacío (sin BD)
+    $modelo = new Producto();
+
+    // ACT + ASSERT: verifico que la tabla sea la correcta
+    $this->assertEquals('productos', $modelo->getTable());
+}
+```
+
+```php
+/** @test */
+public function test_39_calculo_igv_factura_es_correcto(): void
+{
+    // ARRANGE: total que ya incluye el 18% de IGV
+    $totalConIgv = 118.00;
+
+    // ACT: aplicar la formula del sistema
+    $subtotal = round($totalConIgv / 1.18, 2);
+    $igv      = round($totalConIgv - $subtotal, 2);
+
+    // ASSERT: verificar los resultados esperados
+    $this->assertEquals(100.00, $subtotal);
+    $this->assertEquals(18.00, $igv);
+}
+```
+
+---
+
+### Resultado esperado al ejecutar
+
+Si todo está correcto, verás una salida similar a esta:
+
+```
+PASS  Tests\Unit\PruebasTest
+  ✓ test 01 producto apunta a tabla correcta
+  ✓ test 02 producto tiene clave primaria id producto
+  ...
+  ✓ test 40 calculo stock despues de salida es correcto
+
+Tests: 40 passed
+Time:  0.25s
+```
