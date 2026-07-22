@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy loading: cada vista se carga solo cuando el usuario navega a ella
 const DashboardView       = lazy(() => import('./views/DashboardView'));
@@ -25,7 +26,8 @@ function PageLoader() {
 function App() {
   return (
     <Router>
-      <Routes>
+      <ErrorBoundary>
+        <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={
             <Suspense fallback={<PageLoader />}><DashboardView /></Suspense>
@@ -50,7 +52,8 @@ function App() {
           } />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        </Routes>
+      </ErrorBoundary>
     </Router>
   );
 }

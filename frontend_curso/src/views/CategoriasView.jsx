@@ -176,7 +176,10 @@ export default function CategoriasView() {
               id="cat-descripcion"
               placeholder="Descripción opcional"
               value={formData.descripcion}
-              onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[<>{}|=]/g, '');
+                setFormData({ ...formData, descripcion: val });
+              }}
             />
           </div>
           <div className="flex gap-3 pt-2">

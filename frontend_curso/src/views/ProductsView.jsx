@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Plus, Edit2, Trash2, Search, Package, AlertTriangle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { Modal } from '../components/ui/Modal';
 import { useCrud } from '../hooks/useCrud';
+import { useDebounce } from '../hooks/useDebounce';
 import api from '../lib/api';
 
 const EMPTY_FORM = {
@@ -36,6 +37,8 @@ export default function ProductsView() {
   const [formError, setFormError] = useState(null);
   const [priceError, setPriceError] = useState('');
   const [search, setSearch] = useState('');
+  
+  const debouncedSearch = useDebounce(search, 300);
 
   // Cargar categorías para el selector del formulario
   useEffect(() => {
@@ -44,10 +47,14 @@ export default function ProductsView() {
       .catch(err => console.error('[ProductsView] categorias:', err));
   }, []);
 
-  const filtered = productos.filter(p =>
-    p.nombre?.toLowerCase().includes(search.toLowerCase()) ||
-    p.categoria?.nombre?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    if (!debouncedSearch) return productos;
+    const lower = debouncedSearch.toLowerCase();
+    return productos.filter(p =>
+      p.nombre?.toLowerCase().includes(lower) ||
+      p.categoria?.nombre?.toLowerCase().includes(lower)
+    );
+  }, [productos, debouncedSearch]);
 
   const getPriceValidationMessage = (data) => {
     const compra = data.precio_compra === '' ? null : Number(data.precio_compra);
@@ -374,7 +381,10 @@ export default function ProductsView() {
               id="prod-descripcion"
               placeholder="Descripción opcional"
               value={formData.descripcion}
-              onChange={handleChange('descripcion')}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[<>{}|=]/g, '');
+                handleChange('descripcion')({ target: { value: val } });
+              }}
             />
           </div>
 

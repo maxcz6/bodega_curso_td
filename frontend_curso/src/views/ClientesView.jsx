@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, Users } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
 import { useCrud } from '../hooks/useCrud';
+import { useDebounce } from '../hooks/useDebounce';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const EMPTY_FORM = { nombres: '', direccion: '', telefono: '', dni_ruc: '' };
@@ -19,12 +20,18 @@ export default function ClientesView() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState(null);
   const [search, setSearch] = useState('');
+  
+  const debouncedSearch = useDebounce(search, 300);
 
-  const filtered = clientes.filter(c =>
-    c.nombres?.toLowerCase().includes(search.toLowerCase()) ||
-    c.direccion?.toLowerCase().includes(search.toLowerCase()) ||
-    c.dni_ruc?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    if (!debouncedSearch) return clientes;
+    const lower = debouncedSearch.toLowerCase();
+    return clientes.filter(c =>
+      c.nombres?.toLowerCase().includes(lower) ||
+      c.direccion?.toLowerCase().includes(lower) ||
+      c.dni_ruc?.toLowerCase().includes(lower)
+    );
+  }, [clientes, debouncedSearch]);
 
   const openNew = () => {
     setFormData(EMPTY_FORM);
@@ -244,6 +251,7 @@ export default function ClientesView() {
                 }}
                 maxLength={11}
                 minLength={8}
+                autoComplete="off"
               />
             </div>
             <div className="space-y-1">
