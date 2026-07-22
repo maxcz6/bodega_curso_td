@@ -172,7 +172,10 @@ export default function TipoComprobantesView() {
               id="comp-nombre"
               placeholder="Ej: Ticket"
               value={formData.nombre}
-              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[0-9]/g, '');
+                setFormData({ ...formData, nombre: val });
+              }}
               required
               autoFocus
             />

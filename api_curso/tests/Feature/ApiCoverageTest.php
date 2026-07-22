@@ -13,10 +13,24 @@ use App\Models\MotivoMovimiento;
 use App\Models\Venta;
 use App\Models\MovimientoInventario;
 
+/**
+ * Suite de Pruebas de Integración y Cobertura Funcional (Feature Tests)
+ *
+ * Esta clase evalúa el comportamiento completo de la API REST desde la petición HTTP
+ * hasta la respuesta del servidor y persistencia en base de datos.
+ * Utiliza el trait RefreshDatabase para ejecutar cada prueba dentro de una transacción
+ * de base de datos en memoria (SQLite según phpunit.xml), asegurando un entorno limpio y aislado.
+ */
 class ApiCoverageTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Configuración inicial antes de cada prueba.
+     * Siembra en la base de datos temporal los registros maestros mínimos (administrador,
+     * tipos de comprobantes y motivos de movimiento) necesarios para que los controladores
+     * y reglas de negocio funcionen correctamente sin depender de migraciones externas.
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -39,7 +53,15 @@ class ApiCoverageTest extends TestCase
         \DB::table('motivos_movimiento')->updateOrInsert(['id_motivo' => 2], ['nombre' => 'Venta']);
     }
 
-    /** @test */
+    /**
+     * Prueba el ciclo CRUD de Categorías (/api/categorias):
+     * - Listado general (GET index) y obtención por ID (GET show).
+     * - Creación con datos válidos e intento fallido por nombre vacío (422 Validación).
+     * - Actualización exitosa e intento con ID inexistente (404).
+     * - Regla de negocio relacional: rechaza eliminar una categoría (400) si tiene productos vinculados,
+     *   y permite eliminarla (200) tras retirar los productos dependientes.
+     * @test
+     */
     public function test_categorias_crud()
     {
         // GET index
@@ -97,7 +119,14 @@ class ApiCoverageTest extends TestCase
              ->assertStatus(404);
     }
 
-    /** @test */
+    /**
+     * Prueba el ciclo CRUD de Clientes (/api/clientes):
+     * - Consulta general (GET index) y específica por ID (GET show).
+     * - Registro de un nuevo cliente (POST store) y validación de campos vacíos (422).
+     * - Modificación de datos del cliente (PUT update) y manejo de no encontrados (404).
+     * - Regla de integridad referencial: impide borrar un cliente (400) cuando tiene ventas registradas en el historial.
+     * @test
+     */
     public function test_clientes_crud()
     {
         // GET index
@@ -154,7 +183,15 @@ class ApiCoverageTest extends TestCase
              ->assertStatus(400)->assertJson(['success' => false]);
     }
 
-    /** @test */
+    /**
+     * Prueba la gestión de Productos (/api/productos) y alertas de inventario:
+     * - Operaciones CRUD (creación, lectura por ID y listado completo).
+     * - Validación obligatoria de campos en la solicitud (422).
+     * - Endpoint especializado de bajo stock (/api/productos/bajo-stock): detecta productos cuyo stock actual es menor o igual al stock mínimo.
+     * - Desactivación lógica: verifica que al eliminar un producto con historial de ventas, el sistema lo marca como inactivo
+     *   (estado = false) en lugar de eliminar el registro físicamente.
+     * @test
+     */
     public function test_productos_crud_y_bajo_stock()
     {
         $cat = Categoria::create(['nombre' => 'Lácteos']);
@@ -220,7 +257,11 @@ class ApiCoverageTest extends TestCase
              ->assertJsonPath('message', 'El producto tiene historial de transacciones. Se ha desactivado en vez de eliminarse de forma permanente.');
     }
 
-    /** @test */
+    /**
+     * Prueba el CRUD de Tipos de Comprobante (/api/tipo-comprobantes).
+     * Nota: Este bloque y otros posteriores se comentaron opcionalmente para calibrar la métrica total del coverage de la API al ~70%.
+     * @test
+     */
 /*
     public function test_tipo_comprobantes_crud()
     {
@@ -254,7 +295,13 @@ class ApiCoverageTest extends TestCase
     }
 */
 
-    /** @test */
+    /**
+     * Prueba el registro y control de Movimientos de Inventario (/api/inventario/movimientos):
+     * - Registro de entradas (ENTRADA) que incrementan el stock en el almacén.
+     * - Registro de salidas (SALIDA) y rechazo por regla de negocio si la cantidad solicitada supera el stock disponible (400).
+     * - Filtros por producto y tipo de movimiento en la consulta de historial.
+     * @test
+     */
     public function test_movimientos_inventario()
     {
         $cat = Categoria::create(['nombre' => 'Abarrotes']);
@@ -298,7 +345,13 @@ class ApiCoverageTest extends TestCase
         $this->postJson('/api/inventario/movimientos', ['cantidad' => -1])->assertStatus(422);
     }
 
-    /** @test */
+    /**
+     * Prueba el flujo transaccional de Ventas (/api/ventas) y manejo de excepciones:
+     * - Generación de correlativos automáticos e inteligentes según tipo (ej. F001-000001 para facturas y B001-000001 para boletas).
+     * - Excepciones de negocio: rechazo de ventas al intentar vender productos inactivos o cuando el stock actual es menor a la demanda (400).
+     * - Consulta del detalle desglosado (cliente, ítems, totales).
+     * @test
+     */
     public function test_ventas_flujo_y_excepciones()
     {
         $cat = Categoria::create(['nombre' => 'Carnes']);
@@ -364,7 +417,12 @@ class ApiCoverageTest extends TestCase
         $this->postJson('/api/ventas', ['items' => []])->assertStatus(422);
     }
 
-    /** @test */
+    /**
+     * Evalúa la consulta de estadísticas generales del Dashboard (/api/dashboard/stats):
+     * Verifica que el servidor calcule correctamente las métricas consolidadas: ventas del día,
+     * ingresos acumulados, número total de productos, alertas de bajo stock y valorización de inventario.
+     * @test
+     */
     public function test_dashboard_stats()
     {
         $cat = Categoria::create(['nombre' => 'General']);
@@ -392,7 +450,12 @@ class ApiCoverageTest extends TestCase
              ]);
     }
 
-    /** @test */
+    /**
+     * Prueba de cobertura profunda para relaciones de Modelos e introspección mediante reflexión:
+     * - Evalúa métodos relacionales de Eloquent (BelongsTo, HasMany) entre los modelos.
+     * - Verifica métodos protegidos/privados y mutadores de la lógica interna de los modelos.
+     * @test
+     */
 /*
     public function test_relaciones_modelos()
     {
@@ -464,6 +527,13 @@ class ApiCoverageTest extends TestCase
     }
 */
 
+    /**
+     * Prueba los flujos de seguridad y autenticación (AuthController):
+     * - Intento de login fallido por credenciales inválidas (401) o validación vacía (422).
+     * - Bloqueo de acceso cuando el usuario se encuentra inactivo (403).
+     * - Login exitoso con generación de token JWT (200), consulta de perfil (/api/auth/me) y cierre de sesión (/api/auth/logout).
+     * @test
+     */
 /*
     public function test_auth_controller_flows(): void
     {

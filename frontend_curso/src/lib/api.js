@@ -23,9 +23,17 @@ api.interceptors.request.use((config) => {
     const key = config.url + JSON.stringify(config.params ?? {});
     const hit = cache.get(key);
     if (hit && Date.now() - hit.ts < CACHE_TTL) {
-      // Cancela la petición y devuelve datos cacheados
-      config._cached = hit.data;
-      config._cacheHit = true;
+      // Usa un adapter personalizado para resolver la promesa de inmediato sin ir a red
+      config.adapter = function (config) {
+        return Promise.resolve({
+          data: hit.data,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config,
+          request: {}
+        });
+      };
     }
   }
   return config;

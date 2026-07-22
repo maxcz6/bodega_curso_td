@@ -223,7 +223,10 @@ export default function ClientesView() {
               id="cli-nombre"
               placeholder="Nombres completos"
               value={formData.nombres}
-              onChange={(e) => setFormData({ ...formData, nombres: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[0-9]/g, '');
+                setFormData({ ...formData, nombres: val });
+              }}
               required
               autoFocus
             />
@@ -235,7 +238,12 @@ export default function ClientesView() {
                 id="cli-documento"
                 placeholder="12345678"
                 value={formData.dni_ruc}
-                onChange={(e) => setFormData({ ...formData, dni_ruc: e.target.value })}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, '');
+                  setFormData({ ...formData, dni_ruc: val });
+                }}
+                maxLength={11}
+                minLength={8}
               />
             </div>
             <div className="space-y-1">
@@ -244,7 +252,11 @@ export default function ClientesView() {
                 id="cli-telefono"
                 placeholder="999 999 999"
                 value={formData.telefono}
-                onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9+ ]/g, '');
+                  setFormData({ ...formData, telefono: val });
+                }}
+                maxLength={15}
               />
             </div>
           </div>
@@ -254,7 +266,10 @@ export default function ClientesView() {
               id="cli-direccion"
               placeholder="Av. Ejemplo 123"
               value={formData.direccion}
-              onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[<>{}|=]/g, '');
+                setFormData({ ...formData, direccion: val });
+              }}
             />
           </div>
           <div className="flex gap-3 pt-2">
