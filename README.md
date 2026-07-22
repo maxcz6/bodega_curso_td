@@ -877,32 +877,45 @@ Registra un movimiento manual de inventario (entrada o salida).
 ---------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------
 
+# Ejecutar Pruebas con Cobertura (Coverage)
 
-## Prueba de Cobertura de Código
+### 1. Cambiar a la rama correspondiente
 
-El proyecto incluye pruebas unitarias y pruebas de integración (Feature) que verifican el funcionamiento de la API.
-Se ha generado un reporte de cobertura que muestra el porcentaje de código ejecutado por estas pruebas.
-
-### ¿Cómo ejecutar las pruebas y ver el reporte de cobertura?
-
-Para ejecutar todas las pruebas (incluida la prueba de cobertura) y generar el reporte HTML, utiliza el siguiente comando en tu terminal dentro del contenedor Docker:
+Primero, asegúrate de estar en la rama de pruebas de PHP:
 
 ```bash
-# Ejecutar todas las pruebas con reporte de cobertura
+git checkout pu_php
+```
+
+### 2. Regenerar los contenedores de Docker
+
+Para que el entorno tome las últimas configuraciones (como el modo coverage de Xdebug), debes reconstruir y levantar los contenedores en segundo plano:
+
+```bash
+docker compose up -d --build --force-recreate
+```
+
+### 3. Ejecutar las Pruebas
+
+Existen dos formas de correr las pruebas, dependiendo de cómo quieras visualizar el reporte:
+
+#### Opción A: Reporte en Terminal y HTML (Recomendado)
+
+Este comando mostrará un resumen rápido en tu consola y generará un reporte visual y navegable en la carpeta `public/coverage`:
+
+```bash
 docker exec bodega_api php artisan test --coverage-text --coverage-html=public/coverage
 ```
 
-Esto mostrará el resultado en texto en la terminal y también generará un reporte HTML detallado en la carpeta `public/coverage`.
+*(Luego podrás ver el reporte HTML ingresando a [http://localhost:8000/coverage/index.html](http://localhost:8000/coverage/index.html) en tu navegador).*
 
-### ¿Cómo ver el reporte en el navegador?
+#### Opción B: Reporte únicamente en la Terminal
 
-Una vez que las pruebas se hayan ejecutado y el reporte se haya generado, puedes acceder al reporte de cobertura en tu navegador a través de la siguiente URL (asegúrate de reemplazar el puerto si usas uno diferente):
+Si solo quieres ver el porcentaje de cobertura rápidamente desde tu consola sin generar archivos HTML adicionales, utiliza este comando:
 
+```bash
+docker exec bodega_api php artisan test --coverage-text
 ```
-http://localhost:8000/coverage/index.html
-```
-
-Este reporte te permitirá ver qué partes de tu código están siendo cubiertas por las pruebas y cuáles no.
 
 ## Pruebas Unitarias (PHPUnit)
 
@@ -1147,34 +1160,47 @@ public function test_39_calculo_igv_factura_es_correcto(): void
 ---------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------
 
+# Generar documentación de la API usando Laravel Scribe
 
+## Introducción
+El comando `php artisan scribe:generate` pertenece a un paquete llamado **Laravel Scribe**. Este paquete no es una herramienta para pruebas unitarias, sino una herramienta diseñada para **generar documentación de tu API**. 
 
-php artisan scribe:generate pertenece a un paquete llamado Laravel Scribe, el cual no es una herramienta para pruebas unitarias, sino para generar documentación de tu API (te crea una página web bonita con todos tus endpoints, parámetros y ejemplos de respuesta automáticamente).
+Su función principal es crear automáticamente una página web interactiva y presentable que detalla todos los endpoints, parámetros y ejemplos de respuesta de tu aplicación.
 
-Si aún así deseas instalarlo y usarlo para documentar tu API, aquí tienes los pasos en texto para tu entorno con Docker:
+A continuación, se detallan los pasos para instalar y utilizar Laravel Scribe en un entorno de desarrollo utilizando Docker.
 
-1. Instalar el paquete mediante Composer
-Debes instalar Scribe en tu proyecto Laravel. Ya que usas Docker, ejecútalo a través de tu contenedor:
+---
 
-bash
+## Guía de Instalación y Uso
 
+### 1. Instalar el paquete mediante Composer
+Para comenzar, debes instalar Scribe en tu proyecto Laravel. Dado que el entorno está basado en Docker, el comando debe ejecutarse a través del contenedor:
 
+```bash
 docker exec bodega_api composer require --dev knuckleswtf/scribe
-(Nota: Se instala con --dev porque la documentación normalmente solo se genera en entornos de desarrollo local).
+```
+> **Nota:** Se instala con la bandera `--dev` porque la generación de documentación es una tarea que normalmente solo se realiza en entornos de desarrollo local.
 
-2. Publicar el archivo de configuración
-Esto creará un archivo config/scribe.php donde podrás configurar cómo quieres que luzca tu documentación y qué rutas debe leer:
+### 2. Publicar el archivo de configuración
+El siguiente paso es publicar la configuración de Scribe. Esto creará un archivo en `config/scribe.php`, desde el cual podrás personalizar la apariencia de tu documentación y definir qué rutas debe procesar la herramienta:
 
-bash
-
-
+```bash
 docker exec bodega_api php artisan vendor:publish --tag=scribe-config
-3. Generar la documentación
-Una vez que tengas tus rutas y controladores listos (y opcionalmente comentados con las etiquetas de Scribe), ejecutas el comando que mencionaste para que construya la documentación:
+```
 
-bash
+### 3. Generar la documentación
+Una vez que tengas tus rutas y controladores definidos (y opcionalmente comentados usando las etiquetas y anotaciones específicas de Scribe), puedes ejecutar el comando principal para construir la documentación:
 
-
+```bash
 docker exec bodega_api php artisan scribe:generate
-4. Ver la documentación
-Por defecto, Scribe genera los archivos y los coloca en la carpeta public/docs. Para verla, simplemente entra a tu navegador a la URL de tu proyecto seguida de /docs: Ejemplo: http://localhost:8000/docs (reemplaza el puerto por el que estés usando).
+```
+
+### 4. Ver la documentación
+Por defecto, Scribe genera los archivos estáticos y los coloca en la carpeta `public/docs`. 
+
+Para visualizar la documentación generada, simplemente abre tu navegador web y accede a la URL de tu proyecto seguida del path `/docs`. 
+
+**Ejemplo de acceso:**
+```text
+http://localhost:8000/docs
+```

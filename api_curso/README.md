@@ -107,3 +107,63 @@ Al ejecutar el comando de "semillas" (`--seed` en el paso 5), la base de datos s
 * **S14 (08 y 10/07/2026)**: Pruebas de servicios web. (Protocolo y cómo probar).
 * **S15 (15 y 17/07/2026)**: Certificación de servicios web. (Condiciones, Entradas/Salidas, Dimensionamiento).
 * **S16 (22 y 24/07/2026)**: Proyecto de servicios y consumo web. (Presentación de producto y manejo de errores).
+
+---
+
+##  Pruebas de Cobertura de Código (Code Coverage)
+
+Cuando ejecutas las pruebas con cobertura dentro del contenedor de Docker (`bodega_api`), el comportamiento varía según los parámetros que utilices:
+
+### 1. `docker exec bodega_api php artisan test --coverage-text`
+* **¿Qué hace?**  
+  Ejecuta todos los tests (unitarios y de integración) de la aplicación y calcula el porcentaje de cobertura de código.
+* **¿Qué pasa al ejecutarlo?**  
+  Muestra el reporte detallado **únicamente en la terminal**. Verás una lista de tus archivos (controladores, modelos, etc.) con sus respectivos porcentajes de líneas de código cubiertas por los tests directamente en tu consola. No se genera ningún archivo adicional en el sistema.
+
+### 2. `docker exec bodega_api php artisan test --coverage-text --coverage-html=public/coverage`
+* **¿Qué hace?**  
+  Ejecuta los tests de la misma manera que el comando anterior, pero además genera un reporte interactivo en formato HTML.
+* **¿Qué pasa al ejecutarlo?**  
+  Además de mostrar el resumen en la terminal, crea una carpeta en la ruta `public/coverage` dentro del proyecto con archivos HTML. Esto te permite visualizar la cobertura de forma gráfica y navegar línea por línea de tu código desde un navegador web ingresando a:  
+  [http://localhost:8000/coverage/index.html](http://localhost:8000/coverage/index.html) *(o el puerto que estés usando)*.
+
+> **Requisito previo:** Para que ambos comandos funcionen, Xdebug debe estar instalado y configurado en el contenedor con el modo de cobertura activo (`XDEBUG_MODE=coverage`).
+
+---
+
+## 🔍 Estructura de las Pruebas y Cobertura
+
+Para entender qué revisan estas pruebas y qué código analizan, la estructura se divide de la siguiente manera:
+
+### 1. Archivos de Pruebas Ejecutados
+
+El framework de pruebas ejecuta los archivos ubicados dentro de la carpeta `tests/`:
+
+#### 📁 Pruebas Unitarias
+* **Ruta:** [PruebasTest.php](file:///c:/Users/SAM/Documents/max/bodega_curso/api_curso/tests/Unit/PruebasTest.php)
+* **¿Qué hace?** Evalúa de forma aislada componentes y lógica independiente del sistema.
+* **¿Qué contiene?**
+  * **Verificación de Modelos (Eloquent):** Asegura que modelos como `Producto`, `Cliente`, `Venta`, `Categoria`, `MovimientoInventario`, `User`, `DetalleVenta` apunten a la tabla correcta, tengan la clave primaria correcta (`id_producto`, `id_cliente`, etc.) y no posean timestamps por error.
+  * **Seguridad:** Confirma que atributos confidenciales (como la contraseña del usuario) estén ocultos (`hidden`) y no se expongan en JSON.
+  * **Cálculos y Reglas:** Comprueba que fórmulas como el desglose del IGV (18%) o los ajustes de stock den resultados matemáticos exactos.
+  * **Casos Límite:** Proporciones de datos (Data Providers) para evaluar extremos y valores inválidos o negativos.
+
+#### 📁 Pruebas de Características (Feature)
+* **Ruta:** [ApiCoverageTest.php](file:///c:/Users/SAM/Documents/max/bodega_curso/api_curso/tests/Feature/ApiCoverageTest.php)
+* **¿Qué hace?** Simula peticiones HTTP (GET, POST, PUT, DELETE) para probar el flujo completo desde la ruta hasta la base de datos y la respuesta.
+* **¿Qué contiene?**
+  * **Pruebas de CRUDs en la API:**
+    * `/api/categorias`: Valida la creación, lectura, edición y restricciones al borrar categorías asociadas a productos.
+    * `/api/clientes`: Comprueba registros válidos y errores de validación (`422`).
+    * `/api/productos`: Prueba el stock mínimo y alertas.
+    * `/api/movimientos`: Verifica entradas/salidas y restringe salidas sin stock.
+    * `/api/ventas`: Verifica el flujo de caja e impresión de comprobantes.
+    * `/api/dashboard/stats`: Asegura el correcto cálculo de estadísticas globales.
+
+### 2. Código Analizado por la Cobertura (Coverage)
+
+La cobertura de código supervisa qué porcentaje del código del sistema ejecutan tus pruebas. Analiza principalmente:
+
+* **Modelos (`app/Models/*.php`):** Evalúa si las configuraciones de bases de datos son cubiertas por los tests.
+* **Controladores (`app/Http/Controllers/*.php`):** Comprueba que las pruebas pasen por todas las rutas condicionales (`if/else`), validaciones de peticiones y respuestas JSON (éxito y errores).
+* **Rutas (`routes/api.php`):** Verifica que todos los accesos declarados sean llamados al menos una vez por las pruebas de características.

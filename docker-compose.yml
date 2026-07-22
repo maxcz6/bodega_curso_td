@@ -13,7 +13,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootsecret"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootsecret" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -40,9 +40,9 @@ services:
       QUEUE_CONNECTION: sync
       PHP_CLI_SERVER_WORKERS: 8
       LOG_LEVEL: debug # Cambiado a debug para ver logs completos si es necesario
-      
+
       # --- AGREGADO PARA XDEBUG 3 ---
-      XDEBUG_MODE: "develop,debug"
+      XDEBUG_MODE: "develop,debug,coverage"
       XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003 start_with_request=yes"
     extra_hosts:
       # Permite que el contenedor apunte a tu sistema operativo host (VS Code)
