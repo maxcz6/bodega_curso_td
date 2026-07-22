@@ -1,4 +1,4 @@
-# Bodega api 
+# Bodega Curso
 
 Este proyecto se levanta completamente con Docker. No requiere ejecución local de PHP, Composer, Node.js ni MySQL fuera de los contenedores.
 
@@ -877,32 +877,45 @@ Registra un movimiento manual de inventario (entrada o salida).
 ---------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------
 
+# Ejecutar Pruebas con Cobertura (Coverage)
 
-## Prueba de Cobertura de Código
+### 1. Cambiar a la rama correspondiente
 
-El proyecto incluye pruebas unitarias y pruebas de integración (Feature) que verifican el funcionamiento de la API.
-Se ha generado un reporte de cobertura que muestra el porcentaje de código ejecutado por estas pruebas.
-
-### ¿Cómo ejecutar las pruebas y ver el reporte de cobertura?
-
-Para ejecutar todas las pruebas (incluida la prueba de cobertura) y generar el reporte HTML, utiliza el siguiente comando en tu terminal dentro del contenedor Docker:
+Primero, asegúrate de estar en la rama de pruebas de PHP:
 
 ```bash
-# Ejecutar todas las pruebas con reporte de cobertura
+git checkout pu_php
+```
+
+### 2. Regenerar los contenedores de Docker
+
+Para que el entorno tome las últimas configuraciones (como el modo coverage de Xdebug), debes reconstruir y levantar los contenedores en segundo plano:
+
+```bash
+docker compose up -d --build --force-recreate
+```
+
+### 3. Ejecutar las Pruebas
+
+Existen dos formas de correr las pruebas, dependiendo de cómo quieras visualizar el reporte:
+
+#### Opción A: Reporte en Terminal y HTML (Recomendado)
+
+Este comando mostrará un resumen rápido en tu consola y generará un reporte visual y navegable en la carpeta `public/coverage`:
+
+```bash
 docker exec bodega_api php artisan test --coverage-text --coverage-html=public/coverage
 ```
 
-Esto mostrará el resultado en texto en la terminal y también generará un reporte HTML detallado en la carpeta `public/coverage`.
+*(Luego podrás ver el reporte HTML ingresando a [http://localhost:8000/coverage/index.html] en tu navegador).*
 
-### ¿Cómo ver el reporte en el navegador?
+#### Opción B: Reporte únicamente en la Terminal
 
-Una vez que las pruebas se hayan ejecutado y el reporte se haya generado, puedes acceder al reporte de cobertura en tu navegador a través de la siguiente URL (asegúrate de reemplazar el puerto si usas uno diferente):
+Si solo quieres ver el porcentaje de cobertura rápidamente desde tu consola sin generar archivos HTML adicionales, utiliza este comando:
 
+```bash
+docker exec bodega_api php artisan test --coverage-text
 ```
-http://localhost:8000/coverage/index.html
-```
-
-Este reporte te permitirá ver qué partes de tu código están siendo cubiertas por las pruebas y cuáles no.
 
 ## Pruebas Unitarias (PHPUnit)
 
