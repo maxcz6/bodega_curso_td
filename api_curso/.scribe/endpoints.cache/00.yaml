@@ -6,6 +6,132 @@ endpoints:
   -
     custom: []
     httpMethods:
+      - POST
+    uri: api/auth/login
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      username:
+        custom: []
+        name: username
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: ''
+        required: true
+        example: '|]|{+-'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      username: architecto
+      password: '|]|{+-'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/auth/logout
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/auth/me
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
       - GET
     uri: api/dashboard/stats
     metadata:
@@ -32,7 +158,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"data":{"ventas_hoy":0,"total_productos":1,"bajo_stock_count":1,"ventas_semanales":[{"fecha":"11\/07","total":0},{"fecha":"12\/07","total":0},{"fecha":"13\/07","total":0},{"fecha":"14\/07","total":0},{"fecha":"15\/07","total":0},{"fecha":"16\/07","total":0},{"fecha":"17\/07","total":0}],"top_productos":[],"bajo_stock_productos":[{"id_producto":8,"codigo_barras":null,"nombre":"condones piel","descripcion":null,"stock_actual":5,"stock_minimo":5,"precio_compra":"2.90","precio_venta":"3.50","estado":true,"id_categoria":12,"categoria":{"id_categoria":12,"nombre":"preservativo","descripcion":null}}]}}'
+        content: '{"success":true,"data":{"ventas_hoy":0,"total_productos":0,"bajo_stock_count":0,"ventas_semanales":[{"fecha":"16\/07","total":0},{"fecha":"17\/07","total":0},{"fecha":"18\/07","total":0},{"fecha":"19\/07","total":0},{"fecha":"20\/07","total":0},{"fecha":"21\/07","total":0},{"fecha":"22\/07","total":0}],"top_productos":[],"bajo_stock_productos":[]}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -72,7 +198,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"data":[{"id_categoria":12,"nombre":"preservativo","descripcion":null}]}'
+        content: '{"success":true,"data":[]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -162,14 +288,14 @@ endpoints:
         name: id
         description: 'The ID of the categoria.'
         required: true
-        example: 12
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 12
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -178,8 +304,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"data":{"id_categoria":12,"nombre":"preservativo","descripcion":null}}'
+        status: 404
+        content: '{"success":false,"message":"Categor\u00eda no encontrada"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -215,14 +341,14 @@ endpoints:
         name: id
         description: 'The ID of the categoria.'
         required: true
-        example: 12
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 12
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -282,14 +408,14 @@ endpoints:
         name: id
         description: 'The ID of the categoria.'
         required: true
-        example: 12
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 12
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -330,7 +456,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"data":[{"id_cliente":14,"nombres":"eric moscoso","dni_ruc":"654321","telefono":null,"direccion":null}]}'
+        content: '{"success":true,"data":[]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -444,14 +570,14 @@ endpoints:
         name: id
         description: 'The ID of the cliente.'
         required: true
-        example: 14
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 14
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -460,8 +586,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"data":{"id_cliente":14,"nombres":"eric moscoso","dni_ruc":"654321","direccion":null,"telefono":null}}'
+        status: 404
+        content: '{"success":false,"message":"Cliente no encontrado"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -497,14 +623,14 @@ endpoints:
         name: id
         description: 'The ID of the cliente.'
         required: true
-        example: 14
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 14
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -588,14 +714,14 @@ endpoints:
         name: id
         description: 'The ID of the cliente.'
         required: true
-        example: 14
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 14
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -636,7 +762,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"data":[{"id_producto":8,"codigo_barras":null,"nombre":"condones piel","descripcion":null,"stock_actual":5,"stock_minimo":5,"precio_compra":"2.90","precio_venta":"3.50","estado":true,"id_categoria":12,"categoria":{"id_categoria":12,"nombre":"preservativo","descripcion":null}}]}'
+        content: '{"success":true,"data":[]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -676,7 +802,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"data":[{"id_producto":8,"nombre":"condones piel","codigo_barras":null,"precio_venta":"3.50","precio_compra":"2.90","stock_actual":5,"stock_minimo":5,"estado":true,"id_categoria":12,"categoria":{"id_categoria":12,"nombre":"preservativo"}}]}'
+        content: '{"success":true,"data":[]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -792,7 +918,7 @@ endpoints:
         name: estado
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -817,7 +943,7 @@ endpoints:
       stock_minimo: 84
       precio_compra: 12
       precio_venta: 77
-      estado: true
+      estado: false
       id_categoria: architecto
     fileParameters: []
     responses: []
@@ -850,14 +976,14 @@ endpoints:
         name: id
         description: 'The ID of the producto.'
         required: true
-        example: 8
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 8
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -866,8 +992,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"data":{"id_producto":8,"codigo_barras":null,"nombre":"condones piel","descripcion":null,"stock_actual":5,"stock_minimo":5,"precio_compra":"2.90","precio_venta":"3.50","estado":true,"id_categoria":12,"categoria":{"id_categoria":12,"nombre":"preservativo","descripcion":null}}}'
+        status: 404
+        content: '{"success":false,"message":"Producto no encontrado"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -903,14 +1029,14 @@ endpoints:
         name: id
         description: 'The ID of the producto.'
         required: true
-        example: 8
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 8
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -1053,14 +1179,14 @@ endpoints:
         name: id
         description: 'The ID of the producto.'
         required: true
-        example: 8
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 8
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1101,7 +1227,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"success":true,"data":[{"id_tipo_comprobante":1,"nombre":"tarjeta"}]}'
+        content: '{"success":true,"data":[]}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -1179,14 +1305,14 @@ endpoints:
         name: id
         description: 'The ID of the tipo comprobante.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1195,8 +1321,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"data":{"id_tipo_comprobante":1,"nombre":"tarjeta"}}'
+        status: 404
+        content: '{"success":false,"message":"No encontrado"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -1232,14 +1358,14 @@ endpoints:
         name: id
         description: 'The ID of the tipo comprobante.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -1287,14 +1413,14 @@ endpoints:
         name: id
         description: 'The ID of the tipo comprobante.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: 16
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1620,7 +1746,7 @@ endpoints:
         name: tipo_movimiento
         description: ''
         required: true
-        example: ENTRADA
+        example: SALIDA
         type: string
         enumValues:
           - ENTRADA
@@ -1653,7 +1779,7 @@ endpoints:
     cleanBodyParameters:
       id_producto: architecto
       id_motivo: architecto
-      tipo_movimiento: ENTRADA
+      tipo_movimiento: SALIDA
       cantidad: 22
       observaciones: architecto
     fileParameters: []

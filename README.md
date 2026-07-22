@@ -534,7 +534,7 @@ Elimina un cliente. **Falla si tiene ventas registradas.**
 
 ---
 
-### 🟧 Productos
+### Productos
 **Archivo:** `app/Http/Controllers/ProductoController.php`
 
 Gestiona el catálogo de productos de la bodega con sus precios y stock.
@@ -877,10 +877,38 @@ Registra un movimiento manual de inventario (entrada o salida).
 ---------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------------------------------
 
+
+## Prueba de Cobertura de Código
+
+El proyecto incluye pruebas unitarias y pruebas de integración (Feature) que verifican el funcionamiento de la API.
+Se ha generado un reporte de cobertura que muestra el porcentaje de código ejecutado por estas pruebas.
+
+### ¿Cómo ejecutar las pruebas y ver el reporte de cobertura?
+
+Para ejecutar todas las pruebas (incluida la prueba de cobertura) y generar el reporte HTML, utiliza el siguiente comando en tu terminal dentro del contenedor Docker:
+
+```bash
+# Ejecutar todas las pruebas con reporte de cobertura
+docker exec bodega_api php artisan test --coverage-text --coverage-html=public/coverage
+```
+
+Esto mostrará el resultado en texto en la terminal y también generará un reporte HTML detallado en la carpeta `public/coverage`.
+
+### ¿Cómo ver el reporte en el navegador?
+
+Una vez que las pruebas se hayan ejecutado y el reporte se haya generado, puedes acceder al reporte de cobertura en tu navegador a través de la siguiente URL (asegúrate de reemplazar el puerto si usas uno diferente):
+
+```
+http://localhost:8000/coverage/index.html
+```
+
+Este reporte te permitirá ver qué partes de tu código están siendo cubiertas por las pruebas y cuáles no.
+
 ## Pruebas Unitarias (PHPUnit)
 
 El proyecto incluye 40 pruebas unitarias escritas con PHPUnit, agrupadas en un solo archivo.
 ruta : api_curso/tests/Unit/PruebasTest.php
+
 
 ### Ubicación del archivo
 
@@ -893,71 +921,15 @@ api_curso/
 
 ### ¿Qué tipo de pruebas son?
 
-Son pruebas **unitarias puras**: no necesitan base de datos ni servidor web activo.
-Cada prueba crea el modelo en memoria y verifica su configuración o ejecuta un cálculo matemático simple.
-No hacen peticiones HTTP — solo prueban la lógica interna del código.
-
-#### Clasificación de las 40 pruebas por tipo
-
-En las pruebas unitarias existen distintas categorías según qué aspecto del código verifican.
-Las 40 pruebas de este archivo se distribuyen así:
-
-| Tipo de prueba | Qué verifica | Pruebas del archivo |
-|---|---|---|
-| **Configuración** | Que el modelo apunte a la tabla correcta de la BD | 01, 04, 09, 15, 21, 25, 30, 34, 37, 38 |
-| **Clave primaria (PK)** | Que el modelo use la PK correcta (no el genérico `id`) | 02, 10, 16, 22, 26, 31 |
-| **Timestamps** | Que el modelo NO use `created_at` / `updated_at` | 03, 11 |
-| **Existencia de campo** | Que un campo esté en `$fillable` para poder guardarse | 04–08, 12–14, 17–20, 23–24, 27–29, 33, 35–36 |
-| **Seguridad / oculto** | Que el `password` esté en `$hidden` y no salga en JSON | 32 |
-| **Valor mínimo** | Que el sistema calcule correctamente el valor mínimo de stock | 40 |
-| **Límite exacto (boundary)** | Que el cálculo funcione en el borde exacto del rango (18% IGV) | 39 |
-| **Valor negativo / positivo** | Que el nuevo stock nunca sea negativo después de una salida | 40 |
-
-#### Detalle por prueba
-
-| # | Nombre | Tipo |
-|---|---|---|
-| 01 | `test_01_producto_apunta_a_tabla_correcta` | Configuración |
-| 02 | `test_02_producto_tiene_clave_primaria_id_producto` | Clave primaria |
-| 03 | `test_03_producto_no_usa_timestamps` | Timestamps |
-| 04 | `test_04_producto_tiene_nombre_en_fillable` | Existencia de campo |
-| 05 | `test_05_producto_tiene_precio_venta_en_fillable` | Existencia de campo |
-| 06 | `test_06_producto_tiene_precio_compra_en_fillable` | Existencia de campo |
-| 07 | `test_07_producto_tiene_stock_actual_en_fillable` | Existencia de campo |
-| 08 | `test_08_producto_tiene_id_categoria_en_fillable` | Existencia de campo |
-| 09 | `test_09_cliente_apunta_a_tabla_correcta` | Configuración |
-| 10 | `test_10_cliente_tiene_clave_primaria_id_cliente` | Clave primaria |
-| 11 | `test_11_cliente_no_usa_timestamps` | Timestamps |
-| 12 | `test_12_cliente_tiene_nombres_en_fillable` | Existencia de campo |
-| 13 | `test_13_cliente_tiene_dni_ruc_en_fillable` | Existencia de campo |
-| 14 | `test_14_cliente_tiene_telefono_en_fillable` | Existencia de campo |
-| 15 | `test_15_venta_apunta_a_tabla_correcta` | Configuración |
-| 16 | `test_16_venta_tiene_clave_primaria_id_venta` | Clave primaria |
-| 17 | `test_17_venta_tiene_numero_comprobante_en_fillable` | Existencia de campo |
-| 18 | `test_18_venta_tiene_total_en_fillable` | Existencia de campo |
-| 19 | `test_19_venta_tiene_igv_en_fillable` | Existencia de campo |
-| 20 | `test_20_venta_tiene_subtotal_en_fillable` | Existencia de campo |
-| 21 | `test_21_categoria_apunta_a_tabla_correcta` | Configuración |
-| 22 | `test_22_categoria_tiene_clave_primaria_id_categoria` | Clave primaria |
-| 23 | `test_23_categoria_tiene_nombre_en_fillable` | Existencia de campo |
-| 24 | `test_24_categoria_tiene_descripcion_en_fillable` | Existencia de campo |
-| 25 | `test_25_movimiento_apunta_a_tabla_correcta` | Configuración |
-| 26 | `test_26_movimiento_tiene_clave_primaria_id_movimiento` | Clave primaria |
-| 27 | `test_27_movimiento_tiene_tipo_movimiento_en_fillable` | Existencia de campo |
-| 28 | `test_28_movimiento_tiene_stock_anterior_en_fillable` | Existencia de campo |
-| 29 | `test_29_movimiento_tiene_stock_nuevo_en_fillable` | Existencia de campo |
-| 30 | `test_30_user_apunta_a_tabla_usuarios` | Configuración |
-| 31 | `test_31_user_tiene_clave_primaria_id_usuario` | Clave primaria |
-| 32 | `test_32_user_oculta_el_password_en_respuestas_json` | Seguridad / oculto |
-| 33 | `test_33_user_tiene_username_en_fillable` | Existencia de campo |
-| 34 | `test_34_detalle_venta_apunta_a_tabla_correcta` | Configuración |
-| 35 | `test_35_detalle_venta_tiene_precio_unitario_en_fillable` | Existencia de campo |
-| 36 | `test_36_detalle_venta_tiene_cantidad_en_fillable` | Existencia de campo |
-| 37 | `test_37_tipo_comprobante_apunta_a_tabla_correcta` | Configuración |
-| 38 | `test_38_motivo_movimiento_apunta_a_tabla_correcta` | Configuración |
-| 39 | `test_39_calculo_igv_factura_es_correcto` | Límite exacto (boundary) |
-| 40 | `test_40_calculo_stock_despues_de_salida_es_correcto` | Valor mínimo / positivo |
-
+ *   [CONFIG]    Configuracion    → verifica tabla, clave primaria del modelo
+ *   [CAMPO]     Campo fillable   → verifica que el campo se puede guardar
+ *   [SEGURO]    Seguridad        → verifica que datos sensibles estan ocultos
+ *   [MINIMO]    Valor minimo     → verifica el valor mas bajo permitido
+ *   [MAXIMO]    Valor maximo     → verifica el valor mas alto esperado
+ *   [LIMITE]    Limite exacto    → prueba justo en el borde valido/invalido
+ *   [NEGATIVO]  Caso negativo    → verifica que un valor no sea negativo
+ *   [POSITIVO]  Caso positivo    → verifica que el resultado sea mayor a 0
+ *   [MATRIZ]    Data Provider    → una funcion prueba muchos casos distintos
 ---
 
 ### Pasos para ejecutar las pruebas
@@ -983,7 +955,7 @@ docker exec bodega_api php artisan test --filter=PruebasTest
 #### Paso 3 — Ver el resultado con nombre de cada prueba
 
 ```bash
-docker exec bodega_api php artisan test --filter=PruebasTest --verbose
+docker exec bodega_api php artisan test --filter=PruebasTest --debug
 ```
 
 #### Paso 4 — Detener al primer fallo (útil para depurar)
@@ -999,6 +971,17 @@ docker exec bodega_api php artisan test --testsuite=Unit
 ```
 
 ---
+
+### Ejecución con phpunit.standalone.xml
+
+```bash
+docker exec bodega_api vendor/bin/phpunit --configuration phpunit.standalone.xml --filter=PruebasTest
+```
+o
+```bash
+docker exec bodega_api php artisan test --filter=PruebasTest
+```
+
 
 ### ¿Qué verifica cada bloque de pruebas?
 
@@ -1160,19 +1143,38 @@ public function test_39_calculo_igv_factura_es_correcto(): void
 }
 ```
 
----
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 
-### Resultado esperado al ejecutar
 
-Si todo está correcto, verás una salida similar a esta:
 
-```
-PASS  Tests\Unit\PruebasTest
-  ✓ test 01 producto apunta a tabla correcta
-  ✓ test 02 producto tiene clave primaria id producto
-  ...
-  ✓ test 40 calculo stock despues de salida es correcto
+php artisan scribe:generate pertenece a un paquete llamado Laravel Scribe, el cual no es una herramienta para pruebas unitarias, sino para generar documentación de tu API (te crea una página web bonita con todos tus endpoints, parámetros y ejemplos de respuesta automáticamente).
 
-Tests: 40 passed
-Time:  0.25s
-```
+Si aún así deseas instalarlo y usarlo para documentar tu API, aquí tienes los pasos en texto para tu entorno con Docker:
+
+1. Instalar el paquete mediante Composer
+Debes instalar Scribe en tu proyecto Laravel. Ya que usas Docker, ejecútalo a través de tu contenedor:
+
+bash
+
+
+docker exec bodega_api composer require --dev knuckleswtf/scribe
+(Nota: Se instala con --dev porque la documentación normalmente solo se genera en entornos de desarrollo local).
+
+2. Publicar el archivo de configuración
+Esto creará un archivo config/scribe.php donde podrás configurar cómo quieres que luzca tu documentación y qué rutas debe leer:
+
+bash
+
+
+docker exec bodega_api php artisan vendor:publish --tag=scribe-config
+3. Generar la documentación
+Una vez que tengas tus rutas y controladores listos (y opcionalmente comentados con las etiquetas de Scribe), ejecutas el comando que mencionaste para que construya la documentación:
+
+bash
+
+
+docker exec bodega_api php artisan scribe:generate
+4. Ver la documentación
+Por defecto, Scribe genera los archivos y los coloca en la carpeta public/docs. Para verla, simplemente entra a tu navegador a la URL de tu proyecto seguida de /docs: Ejemplo: http://localhost:8000/docs (reemplaza el puerto por el que estés usando).
